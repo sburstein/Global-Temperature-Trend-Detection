@@ -11,3 +11,19 @@ output:
 library(tidyverse) 
 ```
 
+Source of the Data: We accessed the data from Kaggle, but the data originally came from the Berkeley Earth Data Page.
+
+When and How It Was Originally Collected: The Berkeley Earth Data Page collected the data from 16 pre-existing archives. It was updated to Kaggle in 2017.
+
+The Cases: Each observation is a city or state and its respective land temperature, investigating how this changes over time. There are 239,177 cases in the major city dataset and 645,675 cases in the state dataset.
+
+Relevant Variables: Some of the relevant variables in the dataset include dt (date and time of the recorded temperature, a discrete numeric), City, Country, AverageTemperature (the average temperature in that location during that time period), latitude, longitude.
+
+```{r glimpse}
+major_city <- read_csv("data/GlobalLandTemperaturesByMajorCity.csv")
+state <- read_csv("data/GlobalLandTemperaturesByState.csv")
+
+glimpse(major_city)
+glimpse(state)
+```
+
