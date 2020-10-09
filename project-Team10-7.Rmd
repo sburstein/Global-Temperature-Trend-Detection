@@ -27,9 +27,9 @@ Each observation in `GlobalTemperatures` is a numeric date/time value (described
 
 ###Relevant Variables:
 
-The relevant variables in the `major_city` dataset include dt (date and time of the recorded temperature, a discrete numeric), AverageTemperature, AverageTemperatureUncertainty, and geolocation data.
+The relevant variables in the `major_city` dataset include dt (date and time of the recorded temperature, a discrete numeric), AverageTemperature (the average temperature for each city, a continuous numeric), city (nominal categorical), country (nominal categorical), latitude (continuous numeric), and longitude (continuous numeric).
 
-The relevant variables in the `global` dataset include dt (date and time of the recorded temperature, a discrete numeric), LandAverageTemperature (the average global land temperature at that time), and LandAverageTemperatureUncertainty, among many others.
+The relevant variables in the `global` dataset include dt (date and time of the recorded temperature, a discrete numeric), LandAverageTemperature (the average global land temperature at that time, continuous numeric), LandMaxTemperature (the highest recorded land temperature of that year, a continuous numeric), LandMinTemperature (the lowest recorded land temperature of that year, a continous numeric), and LandAndOceanAverageTemperature (the average of land and ocean temperature averages for that year, a continuous numeric).
 
 ```{r glimpse}
 #read in datasets
