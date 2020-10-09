@@ -11,27 +11,53 @@ output:
 library(tidyverse) 
 ```
 
-Source of the Data: We downloaded the data from Kaggle, but the data was originally compiled by the Berkeley Earth Data Lab.
+### Source of the Data:
+We downloaded the data from Kaggle, but the data was originally compiled by the 
+Berkeley Earth Data Lab.
 
-When and How It Was Originally Collected: The Berkeley Earth Data Page collected the data from 16 pre-existing archives. It was updated to Kaggle in 2017.
+### When and How It Was Originally Collected: 
+The Berkeley Earth Data Page collected the data from 16 pre-existing archives. 
+It was updated to Kaggle in 2017.
 
-We tentatively plan to interpolate these time-series datasets with other datasets in order to draw even more interesting conclusions, potentially regarding the correlation between global warming and the prevalence of natural disasters. 
+We tentatively plan to interpolate these time-series datasets with other 
+datasets in order to draw even more interesting conclusions, potentially 
+regarding the correlation between global warming and the prevalence of natural 
+disasters. 
 
-###The Cases:
+### The Cases:
 
-(By Time and Location (for `GlobalLandTemperaturesByMajorCity`))
-Each observation in `GlobalLandTemperaturesByMajorCity` is a city and its respective land temperature, coordinates, and Country, which will be used to investigate changes in climate over time. There are 239,177 rows in the major city dataset. 
+**(By Time and Location (for `GlobalLandTemperaturesByMajorCity`))**
 
-(By Time (for `GlobalLandTemperaturesByMajorCity`))
-Each observation in `GlobalTemperatures` is a numeric date/time value (described below) and its respective land temperature, max temperature, min temperature, ocean temperature, and relevant uncertainties to said variables, which will be used to investigate changes in climate over time. There are 239,177 rows in the global dataset. 
+Each observation in `GlobalLandTemperaturesByMajorCity` is a city and its 
+respective land temperature, coordinates, and Country, which will be used to 
+investigate changes in climate over time. There are 239,177 rows in the major 
+city dataset. 
 
-###Relevant Variables:
+**(By Time (for `GlobalLandTemperaturesByMajorCity`))**
 
-The relevant variables in the `major_city` dataset include dt (date and time of the recorded temperature, a discrete numeric), AverageTemperature (the average temperature for each city, a continuous numeric), city (nominal categorical), country (nominal categorical), latitude (continuous numeric), and longitude (continuous numeric).
+Each observation in `GlobalTemperatures` is a numeric date/time value 
+(described below) and its respective land temperature, max temperature, 
+min temperature, ocean temperature, and relevant uncertainties to said 
+variables, which will be used to investigate changes in climate over time. 
+There are 239,177 rows in the global dataset. 
 
-The relevant variables in the `global` dataset include dt (date and time of the recorded temperature, a discrete numeric), LandAverageTemperature (the average global land temperature at that time, continuous numeric), LandMaxTemperature (the highest recorded land temperature of that year, a continuous numeric), LandMinTemperature (the lowest recorded land temperature of that year, a continous numeric), and LandAndOceanAverageTemperature (the average of land and ocean temperature averages for that year, a continuous numeric).
+### Relevant Variables:
 
-```{r glimpse}
+The relevant variables in the `major_city` dataset include dt (date and time of 
+the recorded temperature, a discrete numeric), AverageTemperature (the average 
+temperature for each city, a continuous numeric), city (nominal categorical), 
+country (nominal categorical), latitude (continuous numeric), and longitude 
+(continuous numeric).
+
+The relevant variables in the `global` dataset include dt (date and time of the 
+recorded temperature, a discrete numeric), LandAverageTemperature (the average 
+global land temperature at that time, continuous numeric), LandMaxTemperature 
+(the highest recorded land temperature of that year, a continuous numeric), 
+LandMinTemperature (the lowest recorded land temperature of that year, a 
+continous numeric), and LandAndOceanAverageTemperature (the average of land and 
+ocean temperature averages for that year, a continuous numeric).
+
+```{r data_glimpse}
 #read in datasets
 major_city <- read_csv("data/GlobalLandTemperaturesByMajorCity.csv")
 global <- read_csv("data/GlobalTemperatures.csv")
@@ -45,10 +71,25 @@ glimpse(global)
 colnames(global)
 ```
 
-#Research Question:
-Is there significant support for rising earth surface temperatures, and if so, how has the rate of change in temperatures fluctuated over time?
+### Research Question:
 
-How do the changes in earth surface temperature differ geographically, and are there regions where climate change seems to have a greater effect?
+**Is there significant support for rising earth surface temperatures, and if so,**
+**how has the rate of change in temperatures fluctuated over time?**
 
+$H_o$ = There is no statistical evidence of rising earth surface temperature 
+since 1750. Thus, the rate of temperature change is constant (0).
 
+$H_a$ = There is statistical evidence of rising earth surface temperature since 
+1750, and the rate of annual temperature change has also changed.
 
+**How do the changes in earth surface temperature differ geographically, and are**
+**there regions where climate change seems to have a greater effect?**
+
+$H_o$ = There is no variation in earth surface temperature change 
+geographically, and all regions experience equal effects of global warming.
+i.e. latitude and longitude values are not correlated with temperature 
+variability since 1750.
+
+$H_a$ = There is variation in earth surface temperature change geographically, 
+and regions experience differing effects of global warming based on their unique 
+geopositions.
