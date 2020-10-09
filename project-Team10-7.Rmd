@@ -21,9 +21,15 @@ Relevant Variables: Some of the relevant variables in the dataset include dt (da
 
 ```{r glimpse}
 major_city <- read_csv("data/GlobalLandTemperaturesByMajorCity.csv")
-state <- read_csv("data/GlobalLandTemperaturesByState.csv")
+temps <- read_csv("data/GlobalTemperatures.csv")
 
 glimpse(major_city)
-glimpse(state)
 ```
+
+#Research Question:
+Is there significant support for rising earth surface temperatures, and if so, how has the rate of change in temperatures fluctuated over time?
+
+How do the changes in earth surface temperature differ geographically, and are there regions where climate change seems to have a greater effect?
+
+
 
