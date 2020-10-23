@@ -7,8 +7,9 @@ output:
   html_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, message = FALSE, warning = FALSE}
 library(tidyverse) 
+library(lubridate)
 ```
 
 Source of the Data: We downloaded the data from Kaggle, but the data was originally compiled by the Berkeley Earth Data Lab.
@@ -31,18 +32,11 @@ The relevant variables in the `major_city` dataset include dt (date and time of 
 
 The relevant variables in the `global` dataset include dt (date and time of the recorded temperature, a discrete numeric), LandAverageTemperature (the average global land temperature at that time, continuous numeric), LandMaxTemperature (the highest recorded land temperature of that year, a continuous numeric), LandMinTemperature (the lowest recorded land temperature of that year, a continous numeric), and LandAndOceanAverageTemperature (the average of land and ocean temperature averages for that year, a continuous numeric).
 
-```{r glimpse}
+```{r read-in-data, message = FALSE}
 #read in datasets
 major_city <- read_csv("data/GlobalLandTemperaturesByMajorCity.csv")
 global <- read_csv("data/GlobalTemperatures.csv")
 
-#summary stats for `major_city`
-glimpse(major_city)
-colnames(major_city)
-
-#summary stats for `global`
-glimpse(global)
-colnames(global)
 ```
 
 #Research Question:
@@ -50,5 +44,44 @@ Is there significant support for rising earth surface temperatures, and if so, h
 
 How do the changes in earth surface temperature differ geographically, and are there regions where climate change seems to have a greater effect?
 
+```{r add-season}
+global <- global %>%
+  mutate(month = month(dt),
+         season = case_when(
+           month < 3 | month == 12 ~ "winter",
+           month >= 3 & month < 6 ~ "spring",
+           month >=6 & month < 9 ~ "summer",
+           month >= 9 & month < 12 ~ "autumn"
+         )) 
+
+major_city <- major_city %>%
+  mutate(month = month(dt),
+         season = case_when(
+           month < 3 | month == 12 ~ "winter",
+           month >= 3 & month < 6 ~ "spring",
+           month >=6 & month < 9 ~ "summer",
+           month >= 9 & month < 12 ~ "autumn"
+         )) 
+
+```
+
+
+```{r general-visualizations}
+ggplot(data=global, aes(
+  x=dt, y=LandAverageTemperature
+)) +
+  geom_point(aes(color=season)) + 
+  labs(title = "Global average land temperature since 1750",
+       x = "Year",
+       y = "Average Land Temp.")
+
+```
+Based on this initial visualization, there seems to be a higher and more variable average land temperature in the data before 1800. 
+Overall, across all seasons, there seems to be an increasing trend in average land temperature after roughly 1975. 
+
+
+```{r}
+
+```
 
 
