@@ -10,6 +10,8 @@ output:
 ```{r setup, message = FALSE, warning = FALSE}
 library(tidyverse) 
 library(lubridate)
+library(maps)
+library(sp)
 ```
 
 ### Source of the Data:
@@ -61,7 +63,30 @@ ocean temperature averages for that year, a continuous numeric).
 ```{r read-in-data, message = FALSE}
 #read in datasets
 major_city <- read_csv("data/GlobalLandTemperaturesByMajorCity.csv")
-global <- read_csv("data/GlobalTemperatures.csv")
+global <- read_csv("data/GlobalTemperatures.csv",
+                    col_types = "Tdddddddd")
+df <- left_join(major_city, global) 
+```
+
+```{r data-processing}
+df$lat<-as.numeric(gsub("N|E|S|W", "",df$Latitude))*
+  ifelse(grepl("S",df$Latitude),-1,1)
+
+df$long<-as.numeric(gsub("N|E|S|W", "",df$Longitude))*
+  ifelse(grepl("W",df$Longitude),-1,1)
+
+df <- df %>%
+  mutate(month = month(dt),
+         year = year(dt),
+         season = case_when(
+           month < 3 | month == 12 ~ "winter",
+           month >= 3 & month < 6 ~ "spring",
+           month >=6 & month < 9 ~ "summer",
+           month >= 9 & month < 12 ~ "autumn"
+         )) 
+
+dy<-replace(df, 2,'blueberry')
+df$Country <- replace(df$Country, df$Country=="Congo (Democratic Republic Of The)","Congo")
 
 ```
 
@@ -76,30 +101,9 @@ since 1750. Thus, the rate of temperature change is constant (0).
 $H_a$ = There is statistical evidence of rising earth surface temperature since 
 1750, and the rate of annual temperature change has also changed.
 
-```{r add-season}
-global <- global %>%
-  mutate(month = month(dt),
-         season = case_when(
-           month < 3 | month == 12 ~ "winter",
-           month >= 3 & month < 6 ~ "spring",
-           month >=6 & month < 9 ~ "summer",
-           month >= 9 & month < 12 ~ "autumn"
-         )) 
 
-major_city <- major_city %>%
-  mutate(month = month(dt),
-         season = case_when(
-           month < 3 | month == 12 ~ "winter",
-           month >= 3 & month < 6 ~ "spring",
-           month >=6 & month < 9 ~ "summer",
-           month >= 9 & month < 12 ~ "autumn"
-         )) 
-
-```
-
-
-```{r general-visualizations}
-ggplot(data=global, aes(
+```{r visualization-by-season}
+ggplot(data=df, aes(
   x=dt, y=LandAverageTemperature
 )) +
   geom_point(aes(color=season)) + 
@@ -108,12 +112,57 @@ ggplot(data=global, aes(
        y = "Average Land Temp.")
 
 ```
-Based on this initial visualization, there seems to be a higher and more variable average land temperature in the data before 1800. 
+Based on this initial visualization, there seems to be a high amount of uncertainty in the average land temperature in the earlier data. Goin forward, we will only use the data after 1900.
 Overall, across all seasons, there seems to be an increasing trend in average land temperature after roughly 1975. 
 
+```{r filter-years}
+df <- df %>%
+  filter(dt >= "1900-01-01")
+```
 
-```{r}
 
+
+```{r country-avg-changes}
+bycountrypre1950 <- df %>%
+  filter(!is.na(AverageTemperature),
+         year < 1950) %>%
+  group_by(Country) %>%
+  summarize(avg = mean(AverageTemperature))
+
+bycountry2010s <- df %>%
+  filter(!is.na(AverageTemperature),
+         year > 2009) %>%
+  group_by(Country) %>%
+  summarize(avg = mean(AverageTemperature))
+
+changesbycountry <- tibble(country=bycountry2010s$Country, 
+                           change = bycountry2010s$avg - bycountrypre1950$avg) 
+
+
+```
+
+```{r visualization-by-country}
+ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
+  geom_bar(stat="identity") + 
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(
+    title="Average change from pre-1950 data to post-2010 data, by country",
+    x="Country")
+```
+
+
+
+```{r map}
+world <- map_data("world")
+
+#ggplot() +
+	#geom_polygon(data = world, 
+	#	aes(x = long, y = lat, group = group),
+	#	fill = NA, colour = "black") + 
+#	geom_point(data = bycountrypre1950,  
+#		aes(x = long, y = lat, color=avg)) +
+#	coord_quickmap() +  
+#	theme_bw() 
 ```
 
 **How do the changes in earth surface temperature differ geographically, and are**
