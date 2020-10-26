@@ -87,7 +87,7 @@ df <- df %>%
 
 dy<-replace(df, 2,'blueberry')
 df$Country <- replace(df$Country, df$Country=="Congo (Democratic Republic Of The)","Congo")
-
+ 
 ```
 
 ### Research Question:
