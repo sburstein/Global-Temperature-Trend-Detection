@@ -177,7 +177,7 @@ changesbycountry <- tibble(country=bycountry2010s$Country,
 
 ```{r visualization-by-country}
 ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
-  geom_bar(stat="identity") + 
+  geom_bar(stat="identity", aes(fill=change)) + 
   theme(axis.text.x = element_text(angle = 90)) +
   labs(
     title="Average change from pre-1950 data to post-2010 data, by country",
@@ -240,19 +240,13 @@ differences <- differences %>%
 
 ```{r differences-viz}
 
-differences
-
 ggplot(data=differences, aes(x=year, y=differences)) +
-  geom_bar(stat="identity")
+  geom_bar(stat="identity") +
+  labs(title = 
+         "Year-to year differences in annual average temperatures since 1900")
 ```
+Based on this visualization, someone could potentially try to counter the argument for the existence of climate change, because there is a large fluctuation of positive and negative changes from year to year. Therefore, we then created a new dataframe to measure the overall difference between each year's average temperature and the average temperature across the 20th century, as shown below.
 
-compare linear model with earlier data to linear model for later data?
-
-global temps are greater now than they were from 1900-1930, and also fluctuating at a greater rate(?)
-
-
-
-comparing annual avg temp to avg 20th century temp:
 ```{r compare-to-20th-century}
 avg_20thcentury <- annual_avg %>%
   summarize(mean(avg)) %>%
@@ -272,7 +266,10 @@ comparison_to_20th <- comparison_to_20th %>%
 
 ```{r visualization-compare-to-avg}
 ggplot(data=comparison_to_20th, aes(x=year, y=comparison_to_20th)) +
-  geom_bar(stat="identity")
+  geom_bar(stat="identity", aes(fill=comparison_to_20th)) +
+  labs(title=
+         "Differences between average annual temp. and 20th century avg.",
+       y = "Amount of change")
 ```
 we want to test whether the average anomaly from between 1980-2010 > average anomaly from between 1900-1930?
 
