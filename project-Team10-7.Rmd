@@ -85,7 +85,6 @@ df <- df %>%
            month >= 9 & month < 12 ~ "autumn"
          )) 
 
-dy<-replace(df, 2,'blueberry')
 df$Country <- replace(df$Country, df$Country=="Congo (Democratic Republic Of The)","Congo")
  
 ```
@@ -107,18 +106,53 @@ ggplot(data=df, aes(
   x=dt, y=LandAverageTemperature
 )) +
   geom_point(aes(color=season)) + 
-  labs(title = "Global average land temperature since 1750",
+  labs(title = "Global average land temperature since 1900",
        x = "Year",
        y = "Average Land Temp.")
 
 ```
-Based on this initial visualization, there seems to be a high amount of uncertainty in the average land temperature in the earlier data. Goin forward, we will only use the data after 1900.
+Based on this initial visualization, there seems to be a high amount of uncertainty in the average land temperature in the earlier data. Going forward, we will only use the data after 1900.
 Overall, across all seasons, there seems to be an increasing trend in average land temperature after roughly 1975. 
 
 ```{r filter-years}
 df <- df %>%
   filter(dt >= "1900-01-01")
 ```
+
+
+
+```{r temp-oceans}
+ggplot(data=df, aes(x=dt, y=LandAndOceanAverageTemperature)) +
+  geom_point(aes(color=season)) + 
+  labs(title = "Global average land + ocean temperature since 1900",
+       x = "Year",
+       y = "Average Land + Ocean Temp.")
+```
+From these two visualizations, the average land/ocean temperature seems to increase more steeply after 1975 than the average land temperature. The values for spring and autumn in the land/ocean data are also much more similar than they are for just land.
+
+(why are there distinct bands in the data?)
+
+
+```{r annual-avg-viz}
+annual_avg <- df %>%
+  group_by(year) %>%
+  summarize(avg = mean(LandAverageTemperature))
+
+ggplot(data=annual_avg, aes(x=year, y=avg)) +
+  geom_point(aes(color=avg), size=2) + 
+  labs(title = "Global average land temperature since 1900",
+       x = "Year",
+       y = "Average Land Temp.")
+```
+When we plot the average annual land temperature, there seems to be a more extreme change in average land temp. over time than when each month is plotted individually.
+
+```{r facet-season}
+#do we need this?
+ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
+  geom_point(aes(color=LandAverageTemperature)) + 
+  facet_wrap(~season)
+```
+
 
 
 
@@ -150,6 +184,12 @@ ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
     x="Country")
 ```
 
+```{r highs-lows-visualization}
+ggplot(data=df, aes(x = dt)) +
+  geom_line(aes(y = LandMaxTemperature)) +
+  geom_line(aes(y = LandMinTemperature))
+```
+
 
 
 ```{r map}
@@ -169,11 +209,106 @@ world <- map_data("world")
 **there regions where climate change seems to have a greater effect?**
 
 
-$H_o$ = There is no variation in earth surface temperature change 
-geographically, and all regions experience equal effects of global warming.
-i.e. latitude and longitude values are not correlated with temperature 
-variability since 1750.
 
-$H_a$ = There is variation in earth surface temperature change geographically, 
-and regions experience differing effects of global warming based on their unique 
-geopositions.
+$H_o$: The average earth surface temperature since 1980 is not greater than the average earth surface temperature over the last 120 years.
+
+$H_a$: The average earth surface temperature data since 1980 are greater than the average earth surface temperature over the last 120 years by a statistically significant amount.
+
+
+^if we reject null:
+$H_o$: The average earth surface temperature since 1980 is changing at the same rate that it was changing from 1900-1930.
+
+$H_a$: The average earth surface temperature since 1980 is changing at a higher rate rate than it was changing from 1900-1930.
+
+
+```{r differences-for-loop}
+differences <- c(nrow(annual_avg))
+
+for (i in 1:nrow(annual_avg) - 1) {
+  differences[i] <- annual_avg$avg[i+1] - annual_avg$avg[i]
+}
+
+```
+
+```{r differences-create-df}
+differences <- tibble(differences)
+differences <- tibble::rowid_to_column(differences, "year")
+differences <- differences %>%
+  mutate(year = 1900 + year)
+
+```
+
+```{r differences-viz}
+
+differences
+
+ggplot(data=differences, aes(x=year, y=differences)) +
+  geom_bar(stat="identity")
+```
+
+compare linear model with earlier data to linear model for later data?
+
+global temps are greater now than they were from 1900-1930, and also fluctuating at a greater rate(?)
+
+
+
+comparing annual avg temp to avg 20th century temp:
+```{r compare-to-20th-century}
+avg_20thcentury <- annual_avg %>%
+  summarize(mean(avg)) %>%
+  pull()
+
+comparison_to_20th <- c(nrow(annual_avg))
+
+for (i in 1:nrow(annual_avg) - 1) {
+  comparison_to_20th[i] <- annual_avg$avg[i+1] - avg_20thcentury
+}
+
+comparison_to_20th <- tibble(comparison_to_20th)
+comparison_to_20th <- tibble::rowid_to_column(comparison_to_20th, "year")
+comparison_to_20th <- comparison_to_20th %>%
+  mutate(year = 1900 + year)
+```
+
+```{r visualization-compare-to-avg}
+ggplot(data=comparison_to_20th, aes(x=year, y=comparison_to_20th)) +
+  geom_bar(stat="identity")
+```
+we want to test whether the average anomaly from between 1980-2010 > average anomaly from between 1900-1930?
+
+
+
+$H_o$
+Canada has experienced earth surface temperature change to the same degree as the global average.
+
+$H_a$
+Canada has experienced a greater amount of earth surface temperature change than the global average.
+
+
+
+
+$H_o$
+Latitude and temperature change are independent; there is no correlation.
+
+$H_a$
+Latitude and temperature change are not independent; there is a correlation between latitude and the amount of observed temperature change.
+
+
+
+
+
+
+
+Linear model(s) for land temperature change and land+ocean temperature change?
+
+
+
+(only if we have time)
+
+$H_o$ = There is no variation in earth surface temperature change 
+geographically.
+
+$H_a$ = There is variation in earth surface temperature change geographically.
+
+
+
