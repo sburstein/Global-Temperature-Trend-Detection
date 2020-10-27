@@ -36,9 +36,9 @@ $H_a$: The mean earth surface temperature in recent years (1980-2013) is greater
 Additionally, we will examine whether the rate of land temperature change is different now than it may have been in earlier years.
 
 Our hypotheses for this question are as follows:
-$H_o$: The global average earth surface temperature changed at the same rate from 1980-2013 as it did from 1900-1930.
+$H_o$: The global average earth surface temperature changed at the same rate from 1975-2013 as it did from 1900-1925.
 
-$H_a$: The global average earth surface temperature changed at a greater rate from 1980-2013 than it did from 1900-1930.
+$H_a$: The global average earth surface temperature changed at a greater rate from 1975-2013 than it did from 1900-1925.
 
 
 
@@ -337,16 +337,27 @@ In context of our question, this indicates that there is evidence to support a s
 
 
 **Research question 2:**
-$H_o$: The global average earth surface temperature changed at the same rate from 1980-2013 as it did from 1900-1930.
+$H_o$: The global average earth surface temperature changed at the same rate from 1975-2013 as it did from 1900-1925.
 
-$H_a$: The global average earth surface temperature changed at a greater rate from 1980-2013 than it did from 1900-1930.
+$H_a$: The global average earth surface temperature changed at a greater rate from 1975-2013 than it did from 1900-1925.
 
 ```{r q-2-lm}
+comparison_to_20th <- comparison_to_20th %>%
+  mutate(time_period = case_when(
+    year >= 1900 & year < 1925 ~ "year19001925",
+    year >= 1925 & year < 1950 ~ "year19251950",
+    year >= 1950 & year < 1975 ~ "year19501975",
+    year >= 1975 ~ "post1975"
+  ))
+
 m_main <- lm(comp ~ year + post1980, data=comparison_to_20th)
 tidy(m_main) %>%
   select(term, estimate)
 
-m_int <- lm(comp ~ year + post1980 + year*post1980, data=comparison_to_20th)
+m_int_1980 <- lm(comp ~ year + post1980 + year*post1980, data=comparison_to_20th)
+tidy(m_int_1980)
+
+m_int <- lm(comp ~ year + time_period + year*time_period, data=comparison_to_20th)
 tidy(m_int)
 ```
 
@@ -359,11 +370,14 @@ $$\widehat{TempDiff} = -59.815 + 0.03025 year $$
 
 
 ```{r q-2-vis}
-ggplot(data=comparison_to_20th, aes(x=year, y=comp, color=post1980)) +
+ggplot(data=comparison_to_20th, aes(x=year, y=comp, color=time_period)) +
   geom_point() +
   geom_smooth(method="lm", se=FALSE) 
 ```
 
+```{r q-2-testing}
+
+```
 
 
 
