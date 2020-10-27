@@ -13,19 +13,50 @@ library(lubridate)
 library(maps)
 library(sp)
 ```
+# Introduction
 
-### Source of the Data:
-We downloaded the data from Kaggle, but the data was originally compiled by the 
-Berkeley Earth Data Lab.
+Climate change is a significant issue that has also become a hot-button political topic in recent years because of the failure of certain individuals, political parties, and corporations to take action. 
 
-### When and How It Was Originally Collected: 
-The Berkeley Earth Data Page collected the data from 16 pre-existing archives. 
-It was updated to Kaggle in 2017.
+In this report, we will be analyzing a dataset containing recorded land temperatures over the last 100+ years to examine whether there is evidence to suggest a statistically significant increase in land temperature over the last 30 years. 
 
-We tentatively plan to interpolate these time-series datasets with other 
-datasets in order to draw even more interesting conclusions, potentially 
-regarding the correlation between global warming and the prevalence of natural 
-disasters. 
+### Research Questions:
+Our main research question will be:  
+**Is there significant evidence to support the existence of climate change?**  
+
+To evaluate this, we will conduct two general hypothesis tests:
+
+First, we will examine whether there is a statistically significant difference between the mean earth surface temperature since 1980 and the mean earth surface temperature over the entire 20th century.  
+
+Our hypotheses for this question are as follows:
+$H_o$: The mean earth surface temperature in recent years (1980-2013) is not greater than the mean earth surface temperature throughout the 20th century.  
+
+$H_a$: The mean earth surface temperature in recent years (1980-2013) is greater than the mean earth surface temperature throughout the 20th century.  
+
+
+Additionally, we will examine whether the rate of land temperature change is different now than it may have been in earlier years.
+
+Our hypotheses for this question are as follows:
+$H_o$: The global average earth surface temperature changed at the same rate from 1980-2013 as it did from 1900-1930.
+
+$H_a$: The global average earth surface temperature changed at a greater rate from 1980-2013 than it did from 1900-1930.
+
+
+
+We will also how the changes in earth surface temperature differ geographically, testing if there are regions where climate change seems to have a greater effect.  
+
+Our hypotheses for this question are as follows:
+$H_o$: All geographical regions have experienced the same mean change in earth surface temperature.
+
+$H_a$: Some regions have experienced higher mean changes in earth surface temperature (we will explore which regions, if any, later in this report).
+
+
+
+
+### The Data:
+We found this dataset on Kaggle.
+The data was originally compiled by the 
+Berkeley Earth Data Lab from 16 pre-existing archives, and it was updated to Kaggle in 2017.
+
 
 ### The Cases:
 
@@ -42,7 +73,7 @@ Each observation in `GlobalTemperatures` is a numeric date/time value
 (described below) and its respective land temperature, max temperature, 
 min temperature, ocean temperature, and relevant uncertainties to said 
 variables, which will be used to investigate changes in climate over time. 
-There are 239,177 rows in the global dataset. 
+There are 3,192 rows in the global dataset. 
 
 ### Relevant Variables:
 
@@ -89,18 +120,8 @@ df$Country <- replace(df$Country, df$Country=="Congo (Democratic Republic Of The
  
 ```
 
-### Research Question:
 
-**Is there significant support for rising earth surface temperatures, and if so,**
-**how has the rate of change in temperatures fluctuated over time?**
-
-$H_o$ = There is no statistical evidence of rising earth surface temperature 
-since 1750. Thus, the rate of temperature change is constant (0).
-
-$H_a$ = There is statistical evidence of rising earth surface temperature since 
-1750, and the rate of annual temperature change has also changed.
-
-
+***Initial visualizations:***
 ```{r visualization-by-season}
 ggplot(data=df, aes(
   x=dt, y=LandAverageTemperature
@@ -128,15 +149,15 @@ ggplot(data=df, aes(x=dt, y=LandAndOceanAverageTemperature)) +
        x = "Year",
        y = "Average Land + Ocean Temp.")
 ```
-From these two visualizations, the average land/ocean temperature seems to increase more steeply after 1975 than the average land temperature. The values for spring and autumn in the land/ocean data are also much more similar than they are for just land.
-
-(why are there distinct bands in the data?)
+Based on the second visualization, the average land/ocean temperature seems to increase more steeply after 1975 than the average land temperature. The values for spring and autumn in the land/ocean data are also much more similar than they are for just land.
 
 
 ```{r annual-avg-viz}
 annual_avg <- df %>%
   group_by(year) %>%
-  summarize(avg = mean(LandAverageTemperature))
+  summarize(avg = mean(LandAverageTemperature),
+            max_avg = mean(LandMaxTemperature),
+            min_avg = mean(LandMinTemperature)) 
 
 ggplot(data=annual_avg, aes(x=year, y=avg)) +
   geom_point(aes(color=avg), size=2) + 
@@ -144,15 +165,21 @@ ggplot(data=annual_avg, aes(x=year, y=avg)) +
        x = "Year",
        y = "Average Land Temp.")
 ```
-When we plot the average annual land temperature, there seems to be a more extreme change in average land temp. over time than when each month is plotted individually.
+When we plot the average annual land temperature (an average of the data points from each month), we can visualize a more extreme change in average land temperature over time than when each month is plotted individually. This is marked by a more severe uptick since 1980.
 
 ```{r facet-season}
-#do we need this?
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
-  geom_point(aes(color=LandAverageTemperature)) + 
+  geom_point(aes(color=LandAverageTemperature), size=.5) + 
   facet_wrap(~season)
 ```
 
+```{r highs-lows-visualization}
+ggplot(data=annual_avg, aes(x = year)) +
+  geom_line(aes(y = max_avg)) +
+  geom_line(aes(y = min_avg))
+```
+
+The upward trend visualized in the first few graphs is consistent over each season, as well as for the annual average temperature highs and lows.
 
 
 
@@ -183,43 +210,14 @@ ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
     title="Average change from pre-1950 data to post-2010 data, by country",
     x="Country")
 ```
-
-```{r highs-lows-visualization}
-ggplot(data=df, aes(x = dt)) +
-  geom_line(aes(y = LandMaxTemperature)) +
-  geom_line(aes(y = LandMinTemperature))
-```
+In this visualization we can see the countries that have had the greatest change in average temperature from before 1950 to 2010-2013.
 
 
 
-```{r map}
-world <- map_data("world")
+**Research question 1:**
+$H_o$: The mean earth surface temperature in recent years (1980-2013) is not greater than the mean earth surface temperature throughout the 20th century.  
 
-#ggplot() +
-	#geom_polygon(data = world, 
-	#	aes(x = long, y = lat, group = group),
-	#	fill = NA, colour = "black") + 
-#	geom_point(data = bycountrypre1950,  
-#		aes(x = long, y = lat, color=avg)) +
-#	coord_quickmap() +  
-#	theme_bw() 
-```
-
-**How do the changes in earth surface temperature differ geographically, and are**
-**there regions where climate change seems to have a greater effect?**
-
-
-
-$H_o$: The average earth surface temperature since 1980 is not greater than the average earth surface temperature over the last 120 years.
-
-$H_a$: The average earth surface temperature data since 1980 are greater than the average earth surface temperature over the last 120 years by a statistically significant amount.
-
-
-^if we reject null:
-$H_o$: The average earth surface temperature since 1980 is changing at the same rate that it was changing from 1900-1930.
-
-$H_a$: The average earth surface temperature since 1980 is changing at a higher rate rate than it was changing from 1900-1930.
-
+$H_a$: The mean earth surface temperature in recent years (1980-2013) is greater than the mean earth surface temperature throughout the 20th century.
 
 ```{r differences-for-loop}
 differences <- c(nrow(annual_avg))
@@ -239,7 +237,6 @@ differences <- differences %>%
 ```
 
 ```{r differences-viz}
-
 ggplot(data=differences, aes(x=year, y=differences)) +
   geom_bar(stat="identity") +
   labs(title = 
@@ -252,37 +249,125 @@ avg_20thcentury <- annual_avg %>%
   summarize(mean(avg)) %>%
   pull()
 
-comparison_to_20th <- c(nrow(annual_avg))
+comp <- c(nrow(annual_avg))
 
 for (i in 1:nrow(annual_avg) - 1) {
-  comparison_to_20th[i] <- annual_avg$avg[i+1] - avg_20thcentury
+  comp[i] <- annual_avg$avg[i+1] - avg_20thcentury
 }
 
-comparison_to_20th <- tibble(comparison_to_20th)
+comparison_to_20th <- tibble(comp)
 comparison_to_20th <- tibble::rowid_to_column(comparison_to_20th, "year")
 comparison_to_20th <- comparison_to_20th %>%
   mutate(year = 1900 + year)
 ```
 
 ```{r visualization-compare-to-avg}
-ggplot(data=comparison_to_20th, aes(x=year, y=comparison_to_20th)) +
-  geom_bar(stat="identity", aes(fill=comparison_to_20th)) +
+ggplot(data=comparison_to_20th, aes(x=year, y=comp)) +
+  geom_bar(stat="identity", aes(fill=comp)) +
   labs(title=
          "Differences between average annual temp. and 20th century avg.",
        y = "Amount of change")
 ```
-we want to test whether the average anomaly from between 1980-2010 > average anomaly from between 1900-1930?
+
+```{r q-1-bootstrap}
+post1980 <- comparison_to_20th %>%
+  filter(year >= 1980)
+
+set.seed(7)
+
+boot_dist <- numeric(5000)
+for (i in 1:5000) {
+  indices <- sample(1 : nrow(post1980), replace = TRUE)
+  boot_diff <- post1980 %>%
+    slice(indices) %>%
+    summarize(mean(comp)) %>%
+    pull()
+  boot_dist[i] <- boot_diff
+}
+boot_dist <- tibble(boot_dist)
+```
+
+```{r q-1-testing}
+obs_diff <- post1980 %>%
+  summarize(mean(comp)) %>%
+  pull()
+
+boot_mean <- boot_dist %>%
+  summarize(mean(boot_dist)) %>%
+  pull()
+
+obs_diff
+
+shifted <- boot_dist %>%
+  mutate(shifted = boot_dist - boot_mean)
+
+shifted %>%
+  mutate(extreme = if_else(shifted >= obs_diff, 1, 0)) %>%
+  summarize(p_val = mean(extreme)) %>%
+  pull()
+```
+
+```{r q-1-visualization}
+ggplot(data = shifted, aes(x = shifted)) +
+  geom_histogram(color = "darkblue", fill = "lightblue",bins=40) +
+  geom_vline(xintercept = obs_diff, color = "red", lwd=1) +
+  labs(title = "Simulated null distribution of differences:",
+       subtitle = "average annual land temp. minus 20th century average temp.",
+       x = "mean difference in temperature"
+         )
+```
+```{r q-1-clt}
+comparison_to_20th <- comparison_to_20th %>%
+  mutate(post1980 = year >= 1980)
+
+t.test(comp ~ post1980,
+  data = comparison_to_20th,
+  mu = 0,
+  var.equal = FALSE,
+  alternative = "less",
+  conf.level = 0.95)
+```
+
+According to both a CLT-based and a simulation-based approach, the p-value is under $\alpha = 0.01$, so we reject this null hypothesis.
+
+The p-value in this approach is the probability of obtaining results in which the post-1980 data exhibit at least the observed difference between the average annual temperature and the average 20th century temperature. From both tests, the p-value was extremely small: we observed a 0 p-value in the simulation-based approach. 
+
+In context of our question, this indicates that there is evidence to support a statistically significant increase in temperature over the 20th century.
 
 
 
-$H_o$
-Canada has experienced earth surface temperature change to the same degree as the global average.
+**Research question 2:**
+$H_o$: The global average earth surface temperature changed at the same rate from 1980-2013 as it did from 1900-1930.
 
-$H_a$
-Canada has experienced a greater amount of earth surface temperature change than the global average.
+$H_a$: The global average earth surface temperature changed at a greater rate from 1980-2013 than it did from 1900-1930.
+
+```{r q-2-lm}
+m_main <- lm(comp ~ year + post1980, data=comparison_to_20th)
+tidy(m_main) %>%
+  select(term, estimate)
+
+m_int <- lm(comp ~ year + post1980 + year*post1980, data=comparison_to_20th)
+tidy(m_int)
+```
+
+$$\widehat{TempDiff} = -11.958 + 0.00605 year - 47.857  post1980 + 0.0242 year \times post1980$$
+Pre-1980:
+$$\widehat{TempDiff} = -11.958 + 0.00605 year $$
+
+Post-1980:
+$$\widehat{TempDiff} = -59.815 + 0.03025 year $$
+
+
+```{r q-2-vis}
+ggplot(data=comparison_to_20th, aes(x=year, y=comp, color=post1980)) +
+  geom_point() +
+  geom_smooth(method="lm", se=FALSE) 
+```
 
 
 
+
+**Research Question 3:**
 
 $H_o$
 Latitude and temperature change are independent; there is no correlation.
@@ -302,6 +387,15 @@ $H_o$ = There is no variation in earth surface temperature change
 geographically.
 
 $H_a$ = There is variation in earth surface temperature change geographically.
+
+
+$H_o$
+Canada has experienced earth surface temperature change to the same degree as the global average.
+
+$H_a$
+Canada has experienced a greater amount of earth surface temperature change than the global average.
+
+
 
 
 
