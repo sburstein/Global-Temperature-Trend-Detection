@@ -391,11 +391,30 @@ Latitude and temperature change are not independent; there is a correlation betw
 
 
 
-Linear model(s) for land temperature change and land+ocean temperature change?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 (only if we have time)
+
+Linear model(s) for land temperature change and land+ocean temperature change?
+
 
 $H_o$ = There is no variation in earth surface temperature change 
 geographically.
