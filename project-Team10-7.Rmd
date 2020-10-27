@@ -15,9 +15,18 @@ library(sp)
 ```
 # Introduction
 
-Climate change is a significant issue that has also become a hot-button political topic in recent years because of the failure of certain individuals, political parties, and corporations to take action: some people do in fact deny the existence of climate change/global warming despite a strong body of scientific support. 
+Climate change is a significant issue that has also become a hot-button 
+political topic in recent years because of the failure of certain individuals, 
+political parties, and corporations to take action: some people do in fact deny 
+the existence of climate change/global warming despite a strong body of 
+scientific support. The main argument behind this is that the Earth is always 
+changing, and that the recent increase in global land and ocean temperatures
+is not significant enough to support global warming.
 
-In this report, we will be analyzing a dataset containing recorded land temperatures over the last 100+ years to examine whether there is evidence to suggest a statistically significant increase in land temperature over the last 30 years. 
+In this report, we will be analyzing a dataset containing recorded land and 
+ocean temperatures over the last 100+ years to examine whether there is evidence 
+to suggest a statistically significant increase in land temperature over the 
+last 30 years. 
 
 ### Research Questions:
 Our main research question will be:  
@@ -25,38 +34,47 @@ Our main research question will be:
 
 To evaluate this, we will conduct three general hypothesis tests:
 
-First, we will examine whether there is a statistically significant difference between the mean earth surface temperature since 1980 and the mean earth surface temperature over the entire 20th century.  
+First, we will examine whether there is a statistically significant difference 
+between the mean earth surface temperature since 1980 and the mean earth surface 
+temperature over the entire 20th century.  
 
 Our hypotheses for this question are as follows:
-$H_o$: The mean earth surface temperature in recent years (1980-2013) is not greater than the mean earth surface temperature throughout the 20th century.  
+$H_o$: The mean earth surface temperature in recent years (1980-2013) is not 
+greater than the mean earth surface temperature throughout the 20th century.  
 
-$H_a$: The mean earth surface temperature in recent years (1980-2013) is greater than the mean earth surface temperature throughout the 20th century.  
-
-
-Additionally, we will examine whether the rate of land temperature change is different now than it may have been in earlier years.
-
-Our hypotheses for this question are as follows:
-$H_o$: The global average earth surface temperature changed at the same rate from 1975-2013 as it did from 1900-1925.
-
-$H_a$: The global average earth surface temperature changed at a greater rate from 1975-2013 than it did from 1900-1925.
+$H_a$: The mean earth surface temperature in recent years (1980-2013) is greater 
+than the mean earth surface temperature throughout the 20th century.  
 
 
-
-We will also how the changes in earth surface temperature differ geographically, testing if there are regions where climate change seems to have a greater effect.  
+Additionally, we will examine whether the rate of land temperature change is 
+different now than it may have been in earlier years.
 
 Our hypotheses for this question are as follows:
-$H_o$: All geographical regions have experienced the same mean change in earth surface temperature.
+$H_o$: The global average earth surface temperature changed at the same rate 
+from 1975-2013 as it did from 1900-1925.
 
-$H_a$: Some regions have experienced higher mean changes in earth surface temperature (we will explore which regions, if any, later in this report).
+$H_a$: The global average earth surface temperature changed at a greater rate 
+from 1975-2013 than it did from 1900-1925.
 
 
 
+We will also how the changes in earth surface temperature differ geographically, 
+testing if there are regions where climate change seems to have a greater 
+effect.  
+
+Our hypotheses for this question are as follows:
+$H_o$: All geographical regions have experienced the same mean change in earth 
+surface temperature.
+
+$H_a$: Some regions have experienced higher mean changes in earth surface 
+temperature (we will explore which regions, if any, later in this report).
 
 ### The Data:
 We found this dataset on Kaggle.
-The data was originally compiled by the 
-Berkeley Earth Data Lab from 16 pre-existing archives, and it was updated to Kaggle in 2017.
-
+The data was originally compiled by the Berkeley Earth Data Lab from 
+16 pre-existing archives, and it was updated to Kaggle in 2017. It is important
+to note that many of the earlier years include NA values, which is why we 
+focused on analysis on the 1900s.
 
 ### The Cases:
 
@@ -120,6 +138,8 @@ df$Country <- replace(df$Country, df$Country=="Congo (Democratic Republic Of The
  
 ```
 
+
+### Methodology
 
 ***Initial visualizations:***
 ```{r visualization-by-season}
@@ -212,12 +232,17 @@ ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
 ```
 In this visualization we can see the countries that have had the greatest change in average temperature from before 1950 to 2010-2013.
 
-
+### Results
 
 **Research question 1:**
-$H_o$: The difference between mean earth surface temperature in recent years (1980-2013) and the mean earth surface temperature throughout the 20th century is not greater than the differences observed during the rest of the 20th century.  
+$H_o$: The difference between mean earth surface temperature in recent years 
+(1980-2013) and the mean earth surface temperature throughout the 20th century 
+is not greater than the differences observed during the rest of the 20th 
+century.  
 
-$H_a$: The difference between mean earth surface temperature in recent years (1980-2013) and the mean earth surface temperature throughout the 20th century is greater than the differences observed during the rest of the 20th century.
+$H_a$: The difference between mean earth surface temperature in recent years 
+(1980-2013) and the mean earth surface temperature throughout the 20th century 
+is greater than the differences observed during the rest of the 20th century.
 
 ```{r differences-for-loop}
 differences <- c(nrow(annual_avg))
@@ -328,22 +353,26 @@ t.test(comp ~ post1980,
   conf.level = 0.95)
 ```
 
-According to both a CLT-based and a simulation-based approach, the p-value is under $\alpha = 0.01$, so we reject this null hypothesis.
+According to both a CLT-based and a simulation-based approach, the p-value is 
+under $\alpha = 0.01$, so we reject this null hypothesis.
 
-The p-value in this approach is the probability of obtaining results in which the post-1980 data exhibit at least the observed difference between the average annual temperature and the average 20th century temperature. From both tests, the p-value was extremely small: we observed a 0 p-value in the simulation-based approach. 
+The p-value in this approach is the probability of obtaining results in which 
+the post-1980 data exhibit at least the observed difference between the average 
+annual temperature and the average 20th century temperature. From both tests, 
+the p-value was extremely small: we observed a 0 p-value in the simulation-based 
+approach. 
 
-In context of our question, this indicates that there is evidence to support a statistically significant increase in temperature over the 20th century.
-
-
-
-
-
+In context of our question, this indicates that there is evidence to support a 
+statistically significant increase in temperature over the 20th century. This is
+important because this is one of the main arguments used against climate change.
 
 
 **Research question 2:**
-$H_o$: The global average earth surface temperature changed at the same rate from 1975-2013 as it did from 1900-1925.
+$H_o$: The global average earth surface temperature changed at the same rate 
+from 1975-2013 as it did from 1900-1925.
 
-$H_a$: The global average earth surface temperature changed at a greater rate from 1975-2013 than it did from 1900-1925.
+$H_a$: The global average earth surface temperature changed at a greater rate 
+from 1975-2013 than it did from 1900-1925.
 
 ```{r q-2-lm}
 comparison_to_20th <- comparison_to_20th %>%
@@ -365,7 +394,8 @@ m_int <- lm(comp ~ year + time_period + year*time_period, data=comparison_to_20t
 tidy(m_int)
 ```
 
-$$\widehat{TempDiff} = -11.958 + 0.00605 year - 47.857  post1980 + 0.0242 year \times post1980$$
+$$\widehat{TempDiff} = -11.958 + 0.00605 year - 47.857  post1980 + 0.0242 year 
+\times post1980$$
 Pre-1980:
 $$\widehat{TempDiff} = -11.958 + 0.00605 year $$
 
@@ -405,7 +435,8 @@ $H_o$
 Latitude and temperature change are independent; there is no correlation.
 
 $H_a$
-Latitude and temperature change are not independent; there is a correlation between latitude and the amount of observed temperature change.
+Latitude and temperature change are not independent; there is a correlation 
+between latitude and the amount of observed temperature change.
 
 
 
@@ -441,12 +472,25 @@ $H_a$ = There is variation in earth surface temperature change geographically.
 
 
 $H_o$
-Canada has experienced earth surface temperature change to the same degree as the global average.
+Canada has experienced earth surface temperature change to the same degree as 
+the global average.
 
 $H_a$
-Canada has experienced a greater amount of earth surface temperature change than the global average.
+Canada has experienced a greater amount of earth surface temperature change 
+than the global average.
 
+### Discussion
 
+Throughout our analysis, we saw clear evidence that climate change exists and 
+that global land and ocean temperatures are increasing at an unprecedented 
+extent. As seen in our earlier visualizations, there is visual evidence that
+the rate of change of temperature has increased, especially since 1975. 
+However, we were also able to use hypothesis testing to support climate change.
+In our first hypothesis test, we found evidence that the mean Earth temperature
+from 1980 to 2013 is greater than the mean Earth temperatures in the 20th 
+century.
+
+** Add the outcomes of our other hypothesis tests once we finish them
 
 
 
