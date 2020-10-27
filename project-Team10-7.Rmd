@@ -15,7 +15,7 @@ library(sp)
 ```
 # Introduction
 
-Climate change is a significant issue that has also become a hot-button political topic in recent years because of the failure of certain individuals, political parties, and corporations to take action. 
+Climate change is a significant issue that has also become a hot-button political topic in recent years because of the failure of certain individuals, political parties, and corporations to take action: some people do in fact deny the existence of climate change/global warming despite a strong body of scientific support. 
 
 In this report, we will be analyzing a dataset containing recorded land temperatures over the last 100+ years to examine whether there is evidence to suggest a statistically significant increase in land temperature over the last 30 years. 
 
@@ -23,7 +23,7 @@ In this report, we will be analyzing a dataset containing recorded land temperat
 Our main research question will be:  
 **Is there significant evidence to support the existence of climate change?**  
 
-To evaluate this, we will conduct two general hypothesis tests:
+To evaluate this, we will conduct three general hypothesis tests:
 
 First, we will examine whether there is a statistically significant difference between the mean earth surface temperature since 1980 and the mean earth surface temperature over the entire 20th century.  
 
@@ -215,9 +215,9 @@ In this visualization we can see the countries that have had the greatest change
 
 
 **Research question 1:**
-$H_o$: The mean earth surface temperature in recent years (1980-2013) is not greater than the mean earth surface temperature throughout the 20th century.  
+$H_o$: The difference between mean earth surface temperature in recent years (1980-2013) and the mean earth surface temperature throughout the 20th century is not greater than the differences observed during the rest of the 20th century.  
 
-$H_a$: The mean earth surface temperature in recent years (1980-2013) is greater than the mean earth surface temperature throughout the 20th century.
+$H_a$: The difference between mean earth surface temperature in recent years (1980-2013) and the mean earth surface temperature throughout the 20th century is greater than the differences observed during the rest of the 20th century.
 
 ```{r differences-for-loop}
 differences <- c(nrow(annual_avg))
@@ -336,6 +336,10 @@ In context of our question, this indicates that there is evidence to support a s
 
 
 
+
+
+
+
 **Research question 2:**
 $H_o$: The global average earth surface temperature changed at the same rate from 1975-2013 as it did from 1900-1925.
 
@@ -378,6 +382,20 @@ ggplot(data=comparison_to_20th, aes(x=year, y=comp, color=time_period)) +
 ```{r q-2-testing}
 
 ```
+
+
+----------------------------------------------------------------------
+How can we hypothesis test this?
+We can try to do a simulation where we run the linear model over maybe like 
+every 5-year period and compare the slopes?
+
+basically we would have to run the linear model each time a for-loop is run
+and then extract the slope somehow, then compare it against the slope for the 
+overall linear model if we were to use one straight line to model land temp. 
+increases, then store that difference in our simulated null distribution.
+
+there is a way to extract the slope from the linear model to use it in calculations
+but i didn't have time to implement it
 
 
 
