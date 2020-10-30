@@ -389,6 +389,7 @@ from 1975-2013 than it did from 1900-1925.
 annual_avg <- annual_avg %>%
   mutate(
     post1980 = year >= 1980,
+    post2000 = year >= 2000,
     time_period = case_when(
     year >= 1900 & year < 1925 ~ "year19001925",
     year >= 1925 & year < 1950 ~ "year19251950",
@@ -402,6 +403,10 @@ tidy(m_main) %>%
 
 m_int_1980 <- lm(avg ~ year + post1980 + year*post1980, data=annual_avg)
 tidy(m_int_1980)%>%
+  select(term, estimate)
+
+m_int_2000 <- lm(avg ~ year + post2000 + year*post2000, data=annual_avg)
+tidy(m_int_2000)%>%
   select(term, estimate)
 
 m_int <- lm(avg ~ year + time_period + year*time_period, data=annual_avg)
@@ -421,6 +426,9 @@ $$\widehat{TempDiff} = -2.836 + 0.00587 year$$
 
 Post-1980:
 $$\widehat {TempDiff} = -51.0624 + 0.0302 year $$
+Post-2000:
+$$\widehat {TempDiff} = -63.65442 + 0.0365 year $$
+
 
 
 ```{r q-2-viz, echo = FALSE}
@@ -472,6 +480,7 @@ boot_mean_slope <- boot_dist_slope %>%
   pull()
 
 post1980slope <- 0.0302
+post2000slope <- 0.0365
 
 ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
   geom_histogram(bins=50,
@@ -479,11 +488,17 @@ ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
                  color = "darkblue") +
   geom_vline(xintercept = post1980slope, 
              lwd = 1, color = "red") +
+  geom_vline(xintercept = post2000slope, 
+             lwd = 1, color = "red")
   labs(title=
          "Simulated null distribution of slopes of avg. temperature change")
 
 boot_dist_slope %>% 
   mutate(extreme = ifelse(boot_dist_slope >= post1980slope, 1, 0))%>%
+  summarize(p_value= mean(extreme))
+
+boot_dist_slope %>% 
+  mutate(extreme = ifelse(boot_dist_slope >= post2000slope, 1, 0))%>%
   summarize(p_value= mean(extreme))
 ```
 
