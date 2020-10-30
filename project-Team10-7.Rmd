@@ -403,6 +403,7 @@ tidy(m_int_1980)
 
 m_int <- lm(comp ~ year + time_period + year*time_period, data=comparison_to_20th)
 tidy(m_int)
+
 ```
 
 $$\widehat{TempDiff} = -11.958 + 0.00605 year - 47.857  post1980 + 0.0242 year 
@@ -421,32 +422,61 @@ ggplot(data=comparison_to_20th, aes(x=year, y=comp, color=time_period)) +
 ```
 
 ```{r q-2-testing, echo = FALSE}
-slopes <- comparison_to_20th %>%
-  mutate(year_category = 
-    for(y:year){
-      //5 * 5
-    }
-  ))
-  m_main <- lm(comp ~ year,
-                 data = comparison_to_20th) %>%
-  tidy(m_main) %>%
-    select(term,estimate)
-
 set.seed(12)
+slopes <- numeric(23)
+
+for (i in 1:23) {
+    fiveyrs <- comparison_to_20th %>%
+      filter(year >= i*5 + 1895 & year < i*5 + 1900)
+    model <- lm(comp ~ year, data=fiveyrs) 
+    model <- tidy(model) %>%
+      select(estimate) %>%
+      slice(2) %>%
+      pull()
+    slopes[i] <- model
+}
+
+slopes <- tibble(slopes)
+slopes <- tibble::rowid_to_column(slopes, "year")
+slopes <- slopes %>%
+  mutate(yearstart = 1895 + 5 * year)
+
+ggplot(data=slopes, aes(x=slopes)) +
+  geom_histogram(bins=50) +
+  labs(title="Distribution of rates of temp. change for each five-year period",
+       subtitle="From 1900-2010",
+       x = "Slope (rate of change in avg. earth surface temperature")
 
 boot_dist_slope <- numeric(5000)
 for (i in 1:5000) {
-  indices <- sample(1 : nrow(), replace = TRUE)
-  boot_diff <- post1980 %>%
+  indices <- sample(1 : nrow(slopes), replace = TRUE)
+  boot_diff <- slopes %>%
     slice(indices) %>%
-    m_main <- lm(comp ~ year,
-                 data = )
-  tidy(m_main)%>%
-    select(term,estimate) %>%
+      summarize(mean_slope = mean(slopes)) %>%
     pull()
   boot_dist_slope[i] <- boot_diff
 }
+
 boot_dist_slope <- tibble(boot_dist_slope)
+
+boot_mean_slope <- boot_dist_slope %>%
+  summarize(mean = mean(boot_dist_slope)) %>% 
+  pull()
+
+post1980slope <- 0.03025
+
+ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
+  geom_histogram(bins=50,
+                 fill = "skyblue", 
+                 color = "darkblue") +
+  geom_vline(xintercept = post1980slope, 
+             lwd = 1, color = "red") +
+  labs(title=
+         "Simulated null distribution of slopes of avg. temperature change")
+
+boot_dist_slope %>% 
+  mutate(extreme = ifelse(boot_dist_slope >= post1980slope, 1, 0))%>%
+  summarize(p_value= mean(extreme))
 ```
 
 
