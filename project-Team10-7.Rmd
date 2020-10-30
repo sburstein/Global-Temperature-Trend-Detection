@@ -354,7 +354,7 @@ ggplot(data = shifted, aes(x = shifted)) +
 
 ```{r q-1-clt, echo = FALSE}
 comparison_to_20th <- comparison_to_20th %>%
-  mutate(post1980 = year >= 1980)
+  mutate(post1980 = year >= 1980) 
 
 t.test(comp ~ post1980,
   data = comparison_to_20th,
@@ -386,37 +386,45 @@ $H_a$: The global average earth surface temperature changed at a greater rate
 from 1975-2013 than it did from 1900-1925.
 
 ```{r q-2-lm, echo = FALSE}
-comparison_to_20th <- comparison_to_20th %>%
-  mutate(time_period = case_when(
+annual_avg <- annual_avg %>%
+  mutate(
+    post1980 = year >= 1980,
+    time_period = case_when(
     year >= 1900 & year < 1925 ~ "year19001925",
     year >= 1925 & year < 1950 ~ "year19251950",
     year >= 1950 & year < 1975 ~ "year19501975",
     year >= 1975 ~ "post1975"
   ))
 
-m_main <- lm(comp ~ year + post1980, data=comparison_to_20th)
+m_main <- lm(avg ~ year, data=annual_avg)
 tidy(m_main) %>%
   select(term, estimate)
 
-m_int_1980 <- lm(comp ~ year + post1980 + year*post1980, data=comparison_to_20th)
-tidy(m_int_1980)
+m_int_1980 <- lm(avg ~ year + post1980 + year*post1980, data=annual_avg)
+tidy(m_int_1980)%>%
+  select(term, estimate)
 
-m_int <- lm(comp ~ year + time_period + year*time_period, data=comparison_to_20th)
+m_int <- lm(avg ~ year + time_period + year*time_period, data=annual_avg)
 tidy(m_int)
 
 ```
+Overall regression:
+$$\widehat{TempDiff} = -12.204 + 0.0107 \times year$$
 
-$$\widehat{TempDiff} = -11.958 + 0.00605 year - 47.857  post1980 + 0.0242 year 
+Interaction model for pre- and post-1980:
+$$\widehat{TempDiff} = -2.836 + 0.00587 year - 48.226 post1980 + 0.0243 year 
 \times post1980$$
+
 Pre-1980:
-$$\widehat{TempDiff} = -11.958 + 0.00605 year $$
+$$\widehat{TempDiff} = -2.836 + 0.00587 year$$
+
 
 Post-1980:
-$$\widehat{TempDiff} = -59.815 + 0.03025 year $$
+$$\widehat {TempDiff} = -51.0624 + 0.0302 year $$
 
 
 ```{r q-2-viz, echo = FALSE}
-ggplot(data=comparison_to_20th, aes(x=year, y=comp, color=time_period)) +
+ggplot(data=annual_avg, aes(x=year, y=avg, color=time_period)) +
   geom_point() +
   geom_smooth(method="lm", se=FALSE) 
 ```
@@ -426,9 +434,9 @@ set.seed(12)
 slopes <- numeric(23)
 
 for (i in 1:23) {
-    fiveyrs <- comparison_to_20th %>%
+    fiveyrs <- annual_avg %>%
       filter(year >= i*5 + 1895 & year < i*5 + 1900)
-    model <- lm(comp ~ year, data=fiveyrs) 
+    model <- lm(avg ~ year, data=fiveyrs) 
     model <- tidy(model) %>%
       select(estimate) %>%
       slice(2) %>%
@@ -463,7 +471,7 @@ boot_mean_slope <- boot_dist_slope %>%
   summarize(mean = mean(boot_dist_slope)) %>% 
   pull()
 
-post1980slope <- 0.03025
+post1980slope <- 0.0302
 
 ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
   geom_histogram(bins=50,
