@@ -421,7 +421,32 @@ ggplot(data=comparison_to_20th, aes(x=year, y=comp, color=time_period)) +
 ```
 
 ```{r q-2-testing, echo = FALSE}
+slopes <- comparison_to_20th %>%
+  mutate(year_category = 
+    for(y:year){
+      //5 * 5
+    }
+  ))
+  m_main <- lm(comp ~ year,
+                 data = comparison_to_20th) %>%
+  tidy(m_main) %>%
+    select(term,estimate)
 
+set.seed(12)
+
+boot_dist_slope <- numeric(5000)
+for (i in 1:5000) {
+  indices <- sample(1 : nrow(), replace = TRUE)
+  boot_diff <- post1980 %>%
+    slice(indices) %>%
+    m_main <- lm(comp ~ year,
+                 data = )
+  tidy(m_main)%>%
+    select(term,estimate) %>%
+    pull()
+  boot_dist_slope[i] <- boot_diff
+}
+boot_dist_slope <- tibble(boot_dist_slope)
 ```
 
 
