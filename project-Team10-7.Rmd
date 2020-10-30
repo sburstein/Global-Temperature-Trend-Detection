@@ -15,11 +15,21 @@ library(sp)
 ```
 # Introduction
 
+One of the biggest environmental issues facing our planet has been climate
+change. As fossil fuel emissions have increased, greenhouse gases have begun
+trapping heat in our atmosphere that has created severe impacts. These include
+increased global temperature and rising ocean levels, in addition to increased
+natural disasters (https://climate.nasa.gov/effects/).
+(https://www.usgs.gov/faqs/how-can-climate-change-affect-natural-disasters-1?
+qt-news_science_products=0#qt-news_science_products)
+
 Climate change is a significant issue that has also become a hot-button 
 political topic in recent years because of the failure of certain individuals, 
 political parties, and corporations to take action: some people do in fact deny 
 the existence of climate change/global warming despite a strong body of 
-scientific support. The main argument behind this is that the Earth is always 
+scientific support. 
+(https://www.sciencealert.com/the-five-corrupt-pillars-of-climate-change-denial) 
+The main argument behind this is that the Earth is always 
 changing, and that the recent increase in global land and ocean temperatures
 is not significant enough to support global warming.
 
