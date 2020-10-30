@@ -7,7 +7,7 @@ output:
   html_document: default
 ---
 
-```{r setup, message = FALSE, warning = FALSE}
+```{r setup, message = FALSE, warning = FALSE, echo = FALSE}
 library(tidyverse) 
 library(lubridate)
 library(maps)
@@ -119,7 +119,7 @@ LandMinTemperature (the lowest recorded land temperature of that year, a
 continous numeric), and LandAndOceanAverageTemperature (the average of land and 
 ocean temperature averages for that year, a continuous numeric).
 
-```{r read-in-data, message = FALSE}
+```{r read-in-data, message = FALSE, echo = FALSE}
 #read in datasets
 major_city <- read_csv("data/GlobalLandTemperaturesByMajorCity.csv")
 global <- read_csv("data/GlobalTemperatures.csv",
@@ -127,7 +127,7 @@ global <- read_csv("data/GlobalTemperatures.csv",
 df <- left_join(major_city, global) 
 ```
 
-```{r data-processing}
+```{r data-processing, echo = FALSE}
 df$lat<-as.numeric(gsub("N|E|S|W", "",df$Latitude))*
   ifelse(grepl("S",df$Latitude),-1,1)
 
@@ -152,7 +152,7 @@ df$Country <- replace(df$Country, df$Country=="Congo (Democratic Republic Of The
 ### Methodology
 
 ***Initial visualizations:***
-```{r visualization-by-season}
+```{r visualization-by-season, echo = FALSE}
 ggplot(data=df, aes(
   x=dt, y=LandAverageTemperature
 )) +
@@ -165,14 +165,14 @@ ggplot(data=df, aes(
 Based on this initial visualization, there seems to be a high amount of uncertainty in the average land temperature in the earlier data. Going forward, we will only use the data after 1900.
 Overall, across all seasons, there seems to be an increasing trend in average land temperature after roughly 1975. 
 
-```{r filter-years}
+```{r filter-years, echo = FALSE}
 df <- df %>%
   filter(dt >= "1900-01-01")
 ```
 
 
 
-```{r temp-oceans}
+```{r temp-oceans, echo = FALSE}
 ggplot(data=df, aes(x=dt, y=LandAndOceanAverageTemperature)) +
   geom_point(aes(color=season)) + 
   labs(title = "Global average land + ocean temperature since 1900",
@@ -182,7 +182,7 @@ ggplot(data=df, aes(x=dt, y=LandAndOceanAverageTemperature)) +
 Based on the second visualization, the average land/ocean temperature seems to increase more steeply after 1975 than the average land temperature. The values for spring and autumn in the land/ocean data are also much more similar than they are for just land.
 
 
-```{r annual-avg-viz}
+```{r annual-avg-viz, echo = FALSE}
 annual_avg <- df %>%
   group_by(year) %>%
   summarize(avg = mean(LandAverageTemperature),
@@ -197,13 +197,13 @@ ggplot(data=annual_avg, aes(x=year, y=avg)) +
 ```
 When we plot the average annual land temperature (an average of the data points from each month), we can visualize a more extreme change in average land temperature over time than when each month is plotted individually. This is marked by a more severe uptick since 1980.
 
-```{r facet-season}
+```{r facet-season, echo = FALSE}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   geom_point(aes(color=LandAverageTemperature), size=.5) + 
   facet_wrap(~season)
 ```
 
-```{r highs-lows-visualization}
+```{r highs-lows-visualization, echo = FALSE}
 ggplot(data=annual_avg, aes(x = year)) +
   geom_line(aes(y = max_avg)) +
   geom_line(aes(y = min_avg))
@@ -213,7 +213,7 @@ The upward trend visualized in the first few graphs is consistent over each seas
 
 
 
-```{r country-avg-changes}
+```{r country-avg-changes, echo = FALSE}
 bycountrypre1950 <- df %>%
   filter(!is.na(AverageTemperature),
          year < 1950) %>%
@@ -232,7 +232,7 @@ changesbycountry <- tibble(country=bycountry2010s$Country,
 
 ```
 
-```{r visualization-by-country}
+```{r visualization-by-country, echo = FALSE}
 ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
   geom_bar(stat="identity", aes(fill=change)) + 
   theme(axis.text.x = element_text(angle = 90)) +
@@ -254,7 +254,7 @@ $H_a$: The difference between mean earth surface temperature in recent years
 (1980-2013) and the mean earth surface temperature throughout the 20th century 
 is greater than the differences observed during the rest of the 20th century.
 
-```{r differences-for-loop}
+```{r differences-for-loop, echo = FALSE}
 differences <- c(nrow(annual_avg))
 
 for (i in 1:nrow(annual_avg) - 1) {
@@ -263,7 +263,7 @@ for (i in 1:nrow(annual_avg) - 1) {
 
 ```
 
-```{r differences-create-df}
+```{r differences-create-df, echo = FALSE}
 differences <- tibble(differences)
 differences <- tibble::rowid_to_column(differences, "year")
 differences <- differences %>%
@@ -271,7 +271,7 @@ differences <- differences %>%
 
 ```
 
-```{r differences-viz}
+```{r differences-viz, echo = FALSE}
 ggplot(data=differences, aes(x=year, y=differences)) +
   geom_bar(stat="identity") +
   labs(title = 
@@ -279,7 +279,7 @@ ggplot(data=differences, aes(x=year, y=differences)) +
 ```
 Based on this visualization, someone could potentially try to counter the argument for the existence of climate change, because there is a large fluctuation of positive and negative changes from year to year. Therefore, we then created a new dataframe to measure the overall difference between each year's average temperature and the average temperature across the 20th century, as shown below.
 
-```{r compare-to-20th-century}
+```{r compare-to-20th-century, echo = FALSE}
 avg_20thcentury <- annual_avg %>%
   summarize(mean(avg)) %>%
   pull()
@@ -296,7 +296,7 @@ comparison_to_20th <- comparison_to_20th %>%
   mutate(year = 1900 + year)
 ```
 
-```{r visualization-compare-to-avg}
+```{r visualization-compare-to-avg, echo = FALSE}
 ggplot(data=comparison_to_20th, aes(x=year, y=comp)) +
   geom_bar(stat="identity", aes(fill=comp)) +
   labs(title=
@@ -304,7 +304,7 @@ ggplot(data=comparison_to_20th, aes(x=year, y=comp)) +
        y = "Amount of change")
 ```
 
-```{r q-1-bootstrap}
+```{r q-1-bootstrap, echo = FALSE}
 post1980 <- comparison_to_20th %>%
   filter(year >= 1980)
 
@@ -322,7 +322,7 @@ for (i in 1:5000) {
 boot_dist <- tibble(boot_dist)
 ```
 
-```{r q-1-testing}
+```{r q-1-testing, echo = FALSE}
 obs_diff <- post1980 %>%
   summarize(mean(comp)) %>%
   pull()
@@ -342,7 +342,7 @@ shifted %>%
   pull()
 ```
 
-```{r q-1-visualization}
+```{r q-1-visualization, echo = FALSE}
 ggplot(data = shifted, aes(x = shifted)) +
   geom_histogram(color = "darkblue", fill = "lightblue",bins=40) +
   geom_vline(xintercept = obs_diff, color = "red", lwd=1) +
@@ -351,7 +351,8 @@ ggplot(data = shifted, aes(x = shifted)) +
        x = "mean difference in temperature"
          )
 ```
-```{r q-1-clt}
+
+```{r q-1-clt, echo = FALSE}
 comparison_to_20th <- comparison_to_20th %>%
   mutate(post1980 = year >= 1980)
 
@@ -384,7 +385,7 @@ from 1975-2013 as it did from 1900-1925.
 $H_a$: The global average earth surface temperature changed at a greater rate 
 from 1975-2013 than it did from 1900-1925.
 
-```{r q-2-lm}
+```{r q-2-lm, echo = FALSE}
 comparison_to_20th <- comparison_to_20th %>%
   mutate(time_period = case_when(
     year >= 1900 & year < 1925 ~ "year19001925",
@@ -413,13 +414,13 @@ Post-1980:
 $$\widehat{TempDiff} = -59.815 + 0.03025 year $$
 
 
-```{r q-2-vis}
+```{r q-2-viz, echo = FALSE}
 ggplot(data=comparison_to_20th, aes(x=year, y=comp, color=time_period)) +
   geom_point() +
   geom_smooth(method="lm", se=FALSE) 
 ```
 
-```{r q-2-testing}
+```{r q-2-testing, echo = FALSE}
 
 ```
 
