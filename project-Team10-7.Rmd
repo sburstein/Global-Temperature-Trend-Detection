@@ -70,7 +70,7 @@ $H_a$: Some regions have experienced higher mean changes in earth surface
 temperature (we will explore which regions, if any, later in this report).
 
 ### The Data:
-We found this dataset on Kaggle.
+We found this dataset on Kaggle (https://www.kaggle.com/berkeleyearth/climate-change-earth-surface-temperature-data).
 The data was originally compiled by the Berkeley Earth Data Lab from 
 16 pre-existing archives, and it was updated to Kaggle in 2017. It is important
 to note that many of the earlier years include NA values, which is why we 
