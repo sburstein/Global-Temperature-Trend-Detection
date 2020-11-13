@@ -503,20 +503,6 @@ boot_dist_slope %>%
 ```
 
 
-----------------------------------------------------------------------
-How can we hypothesis test this?
-We can try to do a simulation where we run the linear model over maybe like 
-every 5-year period and compare the slopes?
-
-basically we would have to run the linear model each time a for-loop is run
-and then extract the slope somehow, then compare it against the slope for the 
-overall linear model if we were to use one straight line to model land temp. 
-increases, then store that difference in our simulated null distribution.
-
-there is a way to extract the slope from the linear model to use it in calculations
-but i didn't have time to implement it
-
-
 
 **Research Question 3:**
 
