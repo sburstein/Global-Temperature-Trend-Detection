@@ -12,6 +12,9 @@ library(tidyverse)
 library(lubridate)
 library(maps)
 library(sp)
+library(RColorBrewer)
+library(paletteer)
+library(ggthemes)
 ```
 # Introduction
 
@@ -152,15 +155,35 @@ df$Country <- replace(df$Country, df$Country=="Congo (Democratic Republic Of The
 ### Methodology
 
 ***Initial visualizations:***
-```{r visualization-by-season, echo = FALSE}
-ggplot(data=df, aes(
-  x=dt, y=LandAverageTemperature
-)) +
-  geom_point(aes(color=season)) + 
-  labs(title = "Global average land temperature since 1900",
-       x = "Year",
-       y = "Average Land Temp.")
+```{r ggplot-theme}
+theme_economist_mod <- function() {
+  theme_economist() + 
+  theme(
+    rect = element_rect(fill = "#E5E9F0", colour = NA,
+                              linetype = 1),
+    panel.background = element_rect(linetype = 0),
+    plot.background = element_rect(fill = "#E5E9F0", colour = NA),
+    line = element_line(colour = "white"),
+    axis.line = element_line(size = rel(1.5))) 
+}
 
+seasoncolors <- c("summer" = "#D08770","autumn" = "#EBCB8B",
+             "winter" = "#88C0D0","spring" = "#B48EAD")
+gradientcolors <- c(
+  "#B48EAD","#5E81AC","#A3BE8C","#EBCB8B","#D08770","#BF616A")
+```
+
+
+```{r visualization-by-season, echo = FALSE}
+ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
+  geom_point(aes(color=season), size=0.8) +
+  labs(title = "Global average land temperatures since 1849",
+       x = "Year",
+       y = "Average land temp.",
+       color = "Season") +
+  scale_color_manual(values=seasoncolors) +
+  theme_economist_mod() +
+  guides(col = guide_legend(override.aes = list(size=4)))
 ```
 Based on this initial visualization, there seems to be a high amount of uncertainty in the average land temperature in the earlier data. Going forward, we will only use the data after 1900.
 Overall, across all seasons, there seems to be an increasing trend in average land temperature after roughly 1975. 
@@ -174,10 +197,14 @@ df <- df %>%
 
 ```{r temp-oceans, echo = FALSE}
 ggplot(data=df, aes(x=dt, y=LandAndOceanAverageTemperature)) +
-  geom_point(aes(color=season)) + 
-  labs(title = "Global average land + ocean temperature since 1900",
+  geom_point(aes(color=season), size=0.8) + 
+  labs(title = "Global average land + ocean temperatures since 1900",
        x = "Year",
-       y = "Average Land + Ocean Temp.")
+       y = "Average land + ocean temp.",
+       color="Season") + 
+  scale_color_manual(values=seasoncolors) +
+  theme_economist_mod() +
+  guides(col = guide_legend(override.aes = list(size=4)))
 ```
 Based on the second visualization, the average land/ocean temperature seems to increase more steeply after 1975 than the average land temperature. The values for spring and autumn in the land/ocean data are also much more similar than they are for just land.
 
@@ -190,30 +217,48 @@ annual_avg <- df %>%
             min_avg = mean(LandMinTemperature)) 
 
 ggplot(data=annual_avg, aes(x=year, y=avg)) +
-  geom_point(aes(color=avg), size=2) + 
-  labs(title = "Global average land temperature since 1900",
+  geom_point(aes(color=avg), size=3) + 
+  labs(title = "Global average land temperatures since 1900",
        x = "Year",
-       y = "Average Land Temp.")
+       y = "Average land temp.") +
+  theme_economist_mod() +
+  scale_colour_gradientn(colours = gradientcolors) + 
+  theme(legend.position="right")
+
 ```
 When we plot the average annual land temperature (an average of the data points from each month), we can visualize a more extreme change in average land temperature over time than when each month is plotted individually. This is marked by a more severe uptick since 1980.
 
 ```{r facet-season, echo = FALSE}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
-  geom_point(aes(color=LandAverageTemperature), size=.5) + 
-  facet_wrap(~season)
+  geom_point(aes(color=LandAverageTemperature), size=.3) + 
+  facet_wrap(~season) +
+  labs(title="Global average land temperatures",
+       subtitle="faceted by season",
+       y="Average land temp.",
+       x = "Year",
+       color = "Average \nland temp.") +
+  theme_economist_mod() +
+  scale_colour_gradientn(colours = gradientcolors) +
+  theme(legend.position="right")
 ```
 
 ```{r highs-lows-visualization, echo = FALSE}
 ggplot(data=annual_avg, aes(x = year)) +
-  geom_line(aes(y = max_avg)) +
-  geom_line(aes(y = min_avg))
+  geom_line(aes(y = max_avg), color="#5E81AC", size=0.3) +
+  geom_line(aes(y = min_avg), color="#5E81AC", size=0.3) + 
+  geom_point(aes(y = max_avg), size=0.6, color="#434C5E") +
+  geom_point(aes(y = min_avg), size=0.6, color="#434C5E") +
+  labs(title = "Annual global average highs and lows",
+       x = "Year",
+       y = "Average global extremes") +
+  theme_economist_mod()
 ```
 
 The upward trend visualized in the first few graphs is consistent over each season, as well as for the annual average temperature highs and lows.
 
 
 
-```{r country-avg-changes, echo = FALSE}
+```{r country-avg-changes, echo = FALSE, message=FALSE}
 bycountrypre1950 <- df %>%
   filter(!is.na(AverageTemperature),
          year < 1950) %>%
@@ -240,12 +285,30 @@ changesbycountry <- tibble(country=bycountry2010s$Country,
 ```
 
 ```{r visualization-by-country, echo = FALSE}
+legend_mod <- function() {
+  theme(axis.text.x = element_text(angle = 90, size = 8,hjust=1),
+        legend.position="right",
+        legend.title = element_text(size=10),
+        legend.title.align = 1,
+        legend.text = element_text(size=8),
+        legend.box.spacing = unit(0.05, "cm"),
+        legend.margin = margin(0,0,0,0, "cm"),
+        legend.key.size = unit(0.5,"cm")) 
+}
+
 ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
   geom_bar(stat="identity", aes(fill=change)) + 
-  theme(axis.text.x = element_text(angle = 90)) +
   labs(
-    title="Average change from pre-1950 data to post-2010 data, by country",
-    x="Country")
+    title="Average change from pre-1950 data to post-2010 data",
+    subtitle = "by country",
+    x="Country",
+    y = "Change in average temperature",
+    fill = "Change in \naverage \ntemp.") + 
+  theme_economist_mod() +
+  scale_fill_gradientn(colours = gradientcolors) +
+  legend_mod() +
+  guides(fill = guide_colorbar(label.position = "left"),label.hjust=1)
+  
 ```
 In this visualization we can see the countries that have had the greatest change in average temperature from before 1950 to 2010-2013.
 
@@ -280,9 +343,15 @@ differences <- differences %>%
 
 ```{r differences-viz, echo = FALSE}
 ggplot(data=differences, aes(x=year, y=differences)) +
-  geom_bar(stat="identity") +
+  geom_bar(aes(fill=differences), stat="identity") +
   labs(title = 
-         "Year-to year differences in annual average temperatures since 1900")
+         "Year-to year differences in annual \naverage temperatures since 1900",
+       fill = "Differences",
+       x = "Year",
+       y = "Change in annual avg. from previous year") + 
+  theme_economist_mod() + 
+  scale_fill_gradientn(colours = gradientcolors) +
+  legend_mod()
 ```
 Based on this visualization, someone could potentially try to counter the argument for the existence of climate change, because there is a large fluctuation of positive and negative changes from year to year. Therefore, we then created a new dataframe to measure the overall difference between each year's average temperature and the average temperature across the 20th century, as shown below.
 
@@ -307,8 +376,12 @@ comparison_to_20th <- comparison_to_20th %>%
 ggplot(data=comparison_to_20th, aes(x=year, y=comp)) +
   geom_bar(stat="identity", aes(fill=comp)) +
   labs(title=
-         "Differences between average annual temp. and 20th century avg.",
-       y = "Amount of change")
+    "Average annual temperatures vs. \n20th century average temperature",
+       y = "Difference from 20th century average") + 
+  theme_economist_mod() + 
+  scale_fill_gradientn(colours = gradientcolors) +
+  theme(axis.title.y = element_text(margin = unit(c(0, 2, 0, 0), "mm"))) +
+  legend_mod()
 ```
 
 ```{r q-1-bootstrap, echo = FALSE}
@@ -574,10 +647,6 @@ change in mean temperature from 1950-2010 than the rest of the world. The p-valu
 However, we constructed a similar t-test for Europe, and when comparing the confidence intervals for the two, comparing Europe to the rest of the world produces a much smaller confidence interval (-.4124, .4133), versus that for North America: (1.2704, 2.0948). Additionally, the p-value for Europe's t-test was 0.9982, indicating a much higher likelihood of Europe having the same true mean change in land temperature as the rest of the world.
 
 ------add discussion points about this----
-
-
-
-
 
 
 
