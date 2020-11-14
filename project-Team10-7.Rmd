@@ -45,42 +45,73 @@ last 30 years.
 Our main research question will be:  
 **Is there significant evidence to support the existence of climate change?**  
 
-To evaluate this, we will conduct three general hypothesis tests:
+To evaluate this, we will conduct comprehensive hypothesis tests on four sub-questions.
 
-First, we will examine whether there is a statistically significant difference 
-between the mean earth surface temperature since 1980 and the mean earth surface 
-temperature over the entire 20th century.  
+*1: Is there evidence to suggest a statistically significant increase in mean
+earth surface temperature from early-20th-century levels to what the data show for more recent years?*. 
 
-Our hypotheses for this question are as follows:
-$H_o$: The mean earth surface temperature in recent years (1980-2013) is not 
-greater than the mean earth surface temperature throughout the 20th century.  
+For this question, we will use $\alpha = 0.01$.  
+Our hypotheses for this question are as follows:  
+$H_o$: The mean difference between annual average temperatures after 1980 and 
+the overall average temperature in the 20th century is not significantly greater than the 
+difference for years before 1980.  
 
-$H_a$: The mean earth surface temperature in recent years (1980-2013) is greater 
-than the mean earth surface temperature throughout the 20th century.  
-
-
-Additionally, we will examine whether the rate of land temperature change is 
-different now than it may have been in earlier years.
-
-Our hypotheses for this question are as follows:
-$H_o$: The global average earth surface temperature changed at the same rate 
-from 1975-2013 as it did from 1900-1925.
-
-$H_a$: The global average earth surface temperature changed at a greater rate 
-from 1975-2013 than it did from 1900-1925.
+$H_a$: The mean difference between annual average temperatures after 1980 and 
+the overall average temperature in the 20th century is greater than the 
+difference for years before 1980.  
 
 
+We predict that there will be sufficient evidence to support a statistically significant increase as detailed
+above, which brings us to the next question:  
 
-We will also how the changes in earth surface temperature differ geographically, 
-testing if there are regions where climate change seems to have a greater 
-effect.  
+*2: Is the earth changing/increasing temperature at a faster rate now than it was in 
+the early 20th century?*
+
+For this question, we will record the observed average rates of change (slope) for every
+five-year period, and test whether the mean slope after 1980 is greater than the mean slope before 1980
+by a statistically significant margin. Because there are only 23 five-year segments between 1900 and 2010, we will 
+use a lower $\alpha = 0.01$ level of 0.05.
 
 Our hypotheses for this question are as follows:
-$H_o$: All geographical regions have experienced the same mean change in earth 
-surface temperature.
+$H_o$: The rate at which the average global land temperature increased after 1980 
+is not greater than the rate of temperature increase starting from 1900
+based on their respective linear models.
 
-$H_a$: Some regions have experienced higher mean changes in earth surface 
-temperature (we will explore which regions, if any, later in this report).
+$H_a$: The rate at which the average global land temperature increased after 1980 
+is greater than the rate of temperature increase starting from 1900
+based on their respective linear models.  
+
+
+Relating to the previous question, which looks at the rates of presumed increase, we will also
+evaluate net change (positive of negative).  
+*3. Do the data provide evidence of a greater degree of net fluctuation from the
+overall 20th century average temperature (positive or negative) after 1980 than was present
+before 1980? *
+
+
+Finally, we will evaluate how the changes in earth surface temperature may differ geographically.
+With Europe and North America having had large roles in industrialization, globalization, and technological developments, all of which have been cited as major contributors to climate change, we wanted to consider if this might be manifested
+in the amount of climate change exhibited in the last century in those continents.
+
+*4. Has North America experienced a greater change in annual average temperatures from the first half
+of the 20th century to 2010 than other continents? Has Europe?*
+
+Our hypotheses for this two-part question are as follows:
+North America -  
+$H_{o}$: The change in mean temperature from before 1950 to post-2010 in North America 
+is equal to the change in temperature observed in the rest of the world.  
+
+$H_{a}$: The change in mean temperature from before 1950 to post-2010 in North America 
+is not equal to the change in temperature observed in the rest of the world.  
+
+
+Europe -  
+$H_{o}$: The change in mean temperature from before 1950 to post-2010 in Europe
+is equal to the change in temperature observed in the rest of the world.  
+
+$H_{a}$: The change in mean temperature from before 1950 to post-2010 in Europe
+is not equal to the change in temperature observed in the rest of the world.
+
 
 ### The Data:
 We found this dataset on Kaggle (https://www.kaggle.com/berkeleyearth/climate-change-earth-surface-temperature-data).
@@ -164,7 +195,9 @@ theme_economist_mod <- function() {
     panel.background = element_rect(linetype = 0),
     plot.background = element_rect(fill = "#E5E9F0", colour = NA),
     line = element_line(colour = "white"),
-    axis.line = element_line(size = rel(1.5))) 
+    axis.line = element_line(size = rel(1.5)),
+    axis.title.y = element_text(margin = unit(c(0, 2, 0, 0), "mm")),
+    axis.title.x = element_text(margin = unit(c(4, 0, 0, 0), "mm")))
 }
 
 seasoncolors <- c("summer" = "#D08770","autumn" = "#EBCB8B",
@@ -251,9 +284,12 @@ ggplot(data=annual_avg, aes(x = year)) +
   labs(title = "Annual global average highs and lows",
        x = "Year",
        y = "Average global extremes") +
-  theme_economist_mod()
+  theme_economist_mod() +
+  theme(
+    axis.title.y = element_text(margin = unit(c(0, 2, 0, 0), "mm"))
+  )
 ```
-
+  
 The upward trend visualized in the first few graphs is consistent over each season, as well as for the annual average temperature highs and lows.
 
 
@@ -286,8 +322,7 @@ changesbycountry <- tibble(country=bycountry2010s$Country,
 
 ```{r visualization-by-country, echo = FALSE}
 legend_mod <- function() {
-  theme(axis.text.x = element_text(angle = 90, size = 8,hjust=1),
-        legend.position="right",
+  theme(legend.position="right",
         legend.title = element_text(size=10),
         legend.title.align = 1,
         legend.text = element_text(size=8),
@@ -305,26 +340,40 @@ ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
     y = "Change in average temperature",
     fill = "Change in \naverage \ntemp.") + 
   theme_economist_mod() +
+  theme(axis.title.y = element_text(margin = unit(c(0, 1, 0, 0), "mm")),
+    axis.text.x = element_text(angle = 90, size = 8,hjust=1),
+    plot.subtitle = element_text(size = 17, hjust = 0.07, vjust = 0.5)) +
   scale_fill_gradientn(colours = gradientcolors) +
   legend_mod() +
-  guides(fill = guide_colorbar(label.position = "left"),label.hjust=1)
+  guides(fill = guide_colorbar(label.position = "left"),label.hjust=1) 
   
 ```
 In this visualization we can see the countries that have had the greatest change in average temperature from before 1950 to 2010-2013.
 
-### Results
+### Methodology/Results
 
-**Research question 1:**
-$H_o$: The difference between mean earth surface temperature in recent years 
+**Question 1:**. 
+*Is there evidence to suggest a statistically significant increase in mean
+earth surface temperature from early-20th-century levels to what the data show for more recent years?*
+
+
+$H_o: \mu_{post1980} \leq \mu_{pre1980}$ 
+Null hypothesis:  
+The mean anomaly of annual temperature averages with respect to the 20th century average
+is not greater than 
+
+difference between mean earth surface temperature in recent years 
 (1980-2013) and the mean earth surface temperature throughout the 20th century 
 is not greater than the differences observed during the rest of the 20th 
 century.  
 
-$H_a$: The difference between mean earth surface temperature in recent years 
+$H_a: \mu_{post1980} > \mu_{pre1980}$ 
+Alternative hypothesis:  
+The difference between mean earth surface temperature in recent years 
 (1980-2013) and the mean earth surface temperature throughout the 20th century 
 is greater than the differences observed during the rest of the 20th century.
 
-```{r differences-for-loop, echo = FALSE}
+```{r per-year-diffs-loop, echo = FALSE}
 differences <- c(nrow(annual_avg))
 
 for (i in 1:nrow(annual_avg) - 1) {
@@ -333,7 +382,7 @@ for (i in 1:nrow(annual_avg) - 1) {
 
 ```
 
-```{r differences-create-df, echo = FALSE}
+```{r per-year-diffs-create-df, echo = FALSE}
 differences <- tibble(differences)
 differences <- tibble::rowid_to_column(differences, "year")
 differences <- differences %>%
@@ -341,7 +390,7 @@ differences <- differences %>%
 
 ```
 
-```{r differences-viz, echo = FALSE}
+```{r per-year-diffs-viz, echo = FALSE}
 ggplot(data=differences, aes(x=year, y=differences)) +
   geom_bar(aes(fill=differences), stat="identity") +
   labs(title = 
@@ -350,19 +399,46 @@ ggplot(data=differences, aes(x=year, y=differences)) +
        x = "Year",
        y = "Change in annual avg. from previous year") + 
   theme_economist_mod() + 
-  scale_fill_gradientn(colours = gradientcolors) +
+  scale_fill_gradientn(colours = c("#EBCB8B","#D08770", "#BF616A")) +
   legend_mod()
 ```
-Based on this visualization, someone could potentially try to counter the argument for the existence of climate change, because there is a large fluctuation of positive and negative changes from year to year. Therefore, we then created a new dataframe to measure the overall difference between each year's average temperature and the average temperature across the 20th century, as shown below.
+Based on this visualization, someone could potentially try to counter the argument for the existence of climate change, because there is a large fluctuation of positive and negative changes from year to year. Therefore, we then created a new data-frame to measure the overall difference between each year's average temperature and the average temperature across the 20th century, as shown below, and are using the comparison to the 20th century average for our hypothesis test.
+
+```{r}
+monthly_avgs <- df %>%
+  filter(year < 2000) %>%
+  group_by(month) %>%
+  summarize(avg = mean(LandAverageTemperature)) 
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```{r compare-to-20th-century, echo = FALSE}
 avg_20thcentury <- annual_avg %>%
+  filter(year < 2000) %>%
   summarize(mean(avg)) %>%
   pull()
 
 comp <- c(nrow(annual_avg))
 
 for (i in 1:nrow(annual_avg) - 1) {
+  
   comp[i] <- annual_avg$avg[i+1] - avg_20thcentury
 }
 
@@ -376,15 +452,16 @@ comparison_to_20th <- comparison_to_20th %>%
 ggplot(data=comparison_to_20th, aes(x=year, y=comp)) +
   geom_bar(stat="identity", aes(fill=comp)) +
   labs(title=
-    "Average annual temperatures vs. \n20th century average temperature",
-       y = "Difference from 20th century average") + 
+  "Anomalies of average temperatures \n with respect to 20th century average",
+    x = "Year",
+    y = "Difference from 20th century average",
+    fill = "Differences") + 
   theme_economist_mod() + 
   scale_fill_gradientn(colours = gradientcolors) +
-  theme(axis.title.y = element_text(margin = unit(c(0, 2, 0, 0), "mm"))) +
   legend_mod()
 ```
 
-```{r q-1-bootstrap, echo = FALSE}
+```{r compare-to-20th-bootstrap, echo = FALSE}
 post1980 <- comparison_to_20th %>%
   filter(year >= 1980)
 
@@ -402,7 +479,19 @@ for (i in 1:5000) {
 boot_dist <- tibble(boot_dist)
 ```
 
-```{r q-1-testing, echo = FALSE}
+```{r compare-to-20th-ci}
+diff_bootstrap_interval <- boot_dist %>%
+  summarize(lower = quantile(boot_dist, 0.005),
+            upper = quantile(boot_dist, 0.995)
+            )
+diff_bootstrap_interval
+```
+Our 99% confidence interval for this hypothesis test is (0.4711, 0.790).
+We can be 99% confident that the true mean difference of annual temperature averages and the 20th
+century average is between these bounds.
+
+
+```{r compare-to-20th-testing, echo = FALSE}
 obs_diff <- post1980 %>%
   summarize(mean(comp)) %>%
   pull()
@@ -422,17 +511,22 @@ shifted %>%
   pull()
 ```
 
-```{r q-1-visualization, echo = FALSE}
+```{r compare-to-20th-sim-viz, echo = FALSE}
 ggplot(data = shifted, aes(x = shifted)) +
-  geom_histogram(color = "darkblue", fill = "lightblue",bins=40) +
-  geom_vline(xintercept = obs_diff, color = "red", lwd=1) +
-  labs(title = "Simulated null distribution of differences:",
-       subtitle = "average annual land temp. minus 20th century average temp.",
-       x = "mean difference in temperature"
-         )
+  geom_histogram(color = "#4C566A", fill = "#88C0D0",bins=40) +
+  geom_vline(xintercept = obs_diff, color = "#BF616A", lwd=1) +
+  annotate("text", 
+           x = obs_diff - 0.04, y = 300, 
+           label= paste("Observed difference: \n", round(obs_diff, 4)),
+           angle = 90, size = 5) + 
+  labs(title = "Simulated null distribution of differences",
+       subtitle = "Average annual land temp. minus 20th century average temp.",
+       x = "Mean difference in temperature",
+       y = "Count") +
+  theme_economist_mod() 
 ```
 
-```{r q-1-clt, echo = FALSE}
+```{r compare-to-20th-clt, echo = FALSE}
 comparison_to_20th <- comparison_to_20th %>%
   mutate(post1980 = year >= 1980) 
 
@@ -441,15 +535,17 @@ t.test(comp ~ post1980,
   mu = 0,
   var.equal = FALSE,
   alternative = "less",
-  conf.level = 0.95)
+  conf.level = 0.99)
 ```
 
-According to both a CLT-based and a simulation-based approach, the p-value is 
-under $\alpha = 0.01$, so we reject this null hypothesis.
+In both approaches used in this analysis, the p-value is well under $\alpha = 0.01$, 
+so we reject this null hypothesis.
 
 The p-value in this approach is the probability of obtaining results in which 
 the post-1980 data exhibit at least the observed difference between the average 
-annual temperature and the average 20th century temperature. From both tests, 
+annual temperature and the average 20th century temperature, under the assumption
+that the mean earth surface temperatures after 1980 do not differ from the means of pre-1980
+years by a statistically significant amount. From both tests, 
 the p-value was extremely small: we observed a 0 p-value in the simulation-based 
 approach. 
 
@@ -458,25 +554,24 @@ statistically significant increase in temperature over the 20th century. This is
 important because this is one of the main arguments used against climate change.
 
 
-**Research question 2:**
-$H_o$: The global average earth surface temperature changed at the same rate 
-from 1975-2013 as it did from 1900-1925.
+**Question 2:**
+*Is the earth changing/increasing temperature at a faster rate now than it was in 
+the early 20th century?*
 
-$H_a$: The global average earth surface temperature changed at a greater rate 
-from 1975-2013 than it did from 1900-1925.
+$H_o: \beta_{post1980} \leq \beta_{pre1980}$ 
+Null hypothesis:  
+The rate at which the average global land temperature increased after 1980 
+is not greater than the rate of temperature increase starting from 1900
+based on their respective linear models.
 
-```{r q-2-lm, echo = FALSE}
-annual_avg <- annual_avg %>%
-  mutate(
-    post1980 = year >= 1980,
-    post2000 = year >= 2000,
-    time_period = case_when(
-    year >= 1900 & year < 1925 ~ "year19001925",
-    year >= 1925 & year < 1950 ~ "year19251950",
-    year >= 1950 & year < 1975 ~ "year19501975",
-    year >= 1975 ~ "post1975"
-  ))
 
+$H_a: \beta_{post1980} > \beta_{pre1980}$ 
+Alternative hypothesis:  
+The rate at which the average global land temperature increased after 1980 
+is greater than the rate of temperature increase starting from 1900
+based on their respective linear models.
+
+```{r time-period-lm, echo = FALSE}
 m_main <- lm(avg ~ year, data=annual_avg)
 tidy(m_main) %>%
   select(term, estimate)
@@ -484,13 +579,6 @@ tidy(m_main) %>%
 m_int_1980 <- lm(avg ~ year + post1980 + year*post1980, data=annual_avg)
 tidy(m_int_1980)%>%
   select(term, estimate)
-
-m_int_2000 <- lm(avg ~ year + post2000 + year*post2000, data=annual_avg)
-tidy(m_int_2000)%>%
-  select(term, estimate)
-
-m_int <- lm(avg ~ year + time_period + year*time_period, data=annual_avg)
-tidy(m_int)
 
 ```
 Overall regression:
@@ -506,18 +594,27 @@ $$\widehat{TempDiff} = -2.836 + 0.00587 year$$
 
 Post-1980:
 $$\widehat {TempDiff} = -51.0624 + 0.0302 year $$
-Post-2000:
-$$\widehat {TempDiff} = -63.65442 + 0.0365 year $$
 
 
 
-```{r q-2-viz, echo = FALSE}
-ggplot(data=annual_avg, aes(x=year, y=avg, color=time_period)) +
-  geom_point() +
-  geom_smooth(method="lm", se=FALSE) 
+```{r 1980-lm-viz, echo = FALSE}
+ggplot(data=annual_avg, aes(x=year, y=avg, color=post1980)) +
+  geom_point(size = 5, alpha = 0.7) +
+  geom_smooth(method="lm", se=FALSE, lwd = 2.5) +
+  labs(title = "Global average land temperatures since 1900:",
+       subtitle = 
+         "Linear model for rates of temperature increase before/after 1980",
+       x = "Year",
+       y = "Average land temp.") +
+  scale_color_discrete(name = "Time period", 
+                       labels = c("Pre-1980", "Post-1980")) +
+  scale_color_manual(values = c("#B48EAD", "#81A1C1")) +
+  theme_economist_mod() +
+  theme(plot.subtitle = element_text(size = 14, hjust = 0)) + 
+  legend_mod()
 ```
 
-```{r q-2-testing, echo = FALSE}
+```{r create-slopes-data, echo = FALSE}
 set.seed(12)
 slopes <- numeric(23)
 
@@ -533,16 +630,25 @@ for (i in 1:23) {
 }
 
 slopes <- tibble(slopes)
-slopes <- tibble::rowid_to_column(slopes, "year")
-slopes <- slopes %>%
+five_year_slopes <- tibble::rowid_to_column(slopes, "year")
+five_year_slopes <- five_year_slopes %>%
   mutate(yearstart = 1895 + 5 * year)
+```
 
-ggplot(data=slopes, aes(x=slopes)) +
-  geom_histogram(bins=50) +
-  labs(title="Distribution of rates of temp. change for each five-year period",
-       subtitle="From 1900-2010",
-       x = "Slope (rate of change in avg. earth surface temperature")
+``` {r every-five-yrs-viz}
+ggplot(data=five_year_slopes, aes(x=slopes)) +
+  geom_histogram(bins=23, fill = "#A3BE8C", color = "#728562") +
+  labs(title=
+         "Distribution of rates of temperature increase",
+       subtitle="Linear model for each five-year period",
+       x = "Slope (rate of change in avg. earth surface temperature)",
+       y = "Count") + 
+  scale_x_continuous(breaks=seq(-0.2,0.25,0.05)) +
+  theme_economist_mod() +
+  theme(plot.subtitle = element_text(size = 14, hjust = 0))
+```
 
+```{r 1980-bootstrap-test}
 boot_dist_slope <- numeric(5000)
 for (i in 1:5000) {
   indices <- sample(1 : nrow(slopes), replace = TRUE)
@@ -560,31 +666,155 @@ boot_mean_slope <- boot_dist_slope %>%
   pull()
 
 post1980slope <- 0.0302
-post2000slope <- 0.0365
-
-ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
-  geom_histogram(bins=50,
-                 fill = "skyblue", 
-                 color = "darkblue") +
-  geom_vline(xintercept = post1980slope, 
-             lwd = 1, color = "red") +
-  geom_vline(xintercept = post2000slope, 
-             lwd = 1, color = "red")
-  labs(title=
-         "Simulated null distribution of slopes of avg. temperature change")
 
 boot_dist_slope %>% 
   mutate(extreme = ifelse(boot_dist_slope >= post1980slope, 1, 0))%>%
   summarize(p_value= mean(extreme))
+```
+From the above simulation-based test, we found a p-value of 0.0592. Because this is 
+not under $\alpha = 0.05$, we fail to reject this null hypothesis.
+
+Here, the p-value is the probability of obtaining results in which the difference in
+average rate of change between post- and pre-1980 temperatures is at least as great as what was observed 
+in the data.
+
+In context of our question, this suggests we may have insufficient evidence of a statistically
+significant increase in the average degree of temperature change from before 1980 to after 1980. 
+
+
+After failing to reject the null hypothesis above, we then considered performing the same test for the data before and after the year 2000. The linear model as shown below suggests a steeper incline than 1980.
+```{r 2000-lm-viz}
+ggplot(data=annual_avg, aes(x=year, y=avg, color=post2000)) +
+  geom_point(size = 5, alpha = 0.7) +
+  geom_smooth(method="lm", se=FALSE, lwd = 2.5) +
+  labs(title = "Global average land temperatures since 1900:",
+       subtitle = 
+         "Linear model for rates of temperature increase before/after 2000",
+       x = "Year",
+       y = "Average land temp.") +
+  scale_color_discrete(name = "Time period", 
+                       labels = c("Pre-2000", "Post-2000")) +
+  scale_color_manual(values = c("#B48EAD", "#81A1C1")) +
+  theme_economist_mod() +
+  theme(plot.subtitle = element_text(size = 14, hjust = 0)) + 
+  legend_mod()
+```
+
+``` {r 2000-bootstrap-test}
+post2000slope <- 0.0365
+
+ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
+  geom_histogram(bins=50,fill = "#8FBCBB", color = "#648382") +
+  geom_vline(xintercept = post1980slope, 
+              color = "#BF616A", lwd=1) +
+  geom_vline(xintercept = post2000slope, 
+              color = "#BF616A", lwd=1) +
+  labs(title=
+     "Simulated null distribution of mean \nrates of change in temperature",
+     x = "Average rate of change (slope)",
+     y = "Count") +
+    theme_economist_mod()
 
 boot_dist_slope %>% 
   mutate(extreme = ifelse(boot_dist_slope >= post2000slope, 1, 0))%>%
   summarize(p_value= mean(extreme))
 ```
 
+In the hypothesis test for years after 2000, the p-value is 0.0214, so we can reject this null hypothesis.
+This p-value indicates a 0.0214 probability of obtaining results in which the post-2000 data points have a mean 
+rate of change equal to or greater than the one observed, assuming that the rates of change truly are equal.
+
+In context of our original research question, this suggests that the earth surface temperature changes that 
+we examined in part 1 might be occurring at a quickening pace over time, with a decreasing probability of 
+obtaining results as or more extreme as observed (the p-values for the 1980s and 2000s tests). However, it should be noted that there is very limited data after 2000, so this p-value should not
+necessarily be interpreted as a practically significant value, and this test alone does not adequately answer
+our overall research question.
+
+  
+**Question 3:**
+*Do the data provide evidence of a greater degree of net fluctuation from the
+overall 20th century average temperature (positive or negative) after 1980 than was present
+before 1980?*
+
+```{r net-change}
+ggplot(data=differences, aes(x=year, y=abs(differences))) +
+  geom_bar(aes(fill=differences), stat="identity") +
+  labs(title = 
+    "Year-to year net differences in \nannual average temperatures since 1900",
+       fill = "Net differences",
+       x = "Year",
+       y = "Change in annual avg. from previous year") + 
+  theme_economist_mod() + 
+  scale_fill_gradientn(colours = c("#EBCB8B","#D08770", "#BF616A")) +
+  legend_mod()
+
+```
+
+$H_o:\mu_{pre1980net} \leq \mu_{post1980net} $ 
+Null hypothesis:  
+The mean net (absolute value) year-to-year fluctuation in global average surface temperatures after
+1980 is not greater than the mean year-to-year fluctuation before 1980.
 
 
-**Research Question 3:**
+$H_a:\mu_{pre1980net} > \mu_{post1980net} $ 
+Alternative hypothesis:  
+The mean net (absolute value) year-to-year fluctuation in global average surface temperatures after
+1980 is greater than the mean year-to-year fluctuation before 1980.
+
+```{r net-change-bootstrap}
+set.seed(13)
+
+boot_dist <- numeric(5000)
+for (i in 1:5000) {
+  indices <- sample(1 : nrow(post1980), replace = TRUE)
+  boot_diff <- post1980 %>%
+    slice(indices) %>%
+    summarize(mean(comp)) %>%
+    pull()
+  boot_dist[i] <- boot_diff
+}
+boot_dist <- tibble(boot_dist)
+```
+
+```{r compare-to-20th-ci}
+diff_bootstrap_interval <- boot_dist %>%
+  summarize(lower = quantile(boot_dist, 0.005),
+            upper = quantile(boot_dist, 0.995)
+            )
+diff_bootstrap_interval
+```
+Our 99% confidence interval for this hypothesis test is (0.357, 0.664).
+We can be 99% confident that the true mean difference of annual temperature averages and the 20th
+century average is between these bounds.
+
+
+```{r compare-to-20th-testing, echo = FALSE}
+obs_diff <- post1980 %>%
+  summarize(mean(comp)) %>%
+  pull()
+
+boot_mean <- boot_dist %>%
+  summarize(mean(boot_dist)) %>%
+  pull()
+
+obs_diff
+
+shifted <- boot_dist %>%
+  mutate(shifted = boot_dist - boot_mean)
+
+shifted %>%
+  mutate(extreme = if_else(shifted >= obs_diff, 1, 0)) %>%
+  summarize(p_val = mean(extreme)) %>%
+  pull()
+
+```
+
+
+
+
+
+
+**Question 4:**
 
 $H_o: \mu_n = \mu_g$
 The change in mean temperature from before 1950 to post-2010 in North America is equal to the global change.
@@ -658,28 +888,6 @@ However, we constructed a similar t-test for Europe, and when comparing the conf
 
 
 
-
-
-
-
-(only if we have time)
-
-Linear model(s) for land temperature change and land+ocean temperature change?
-
-
-$H_o$ = There is no variation in earth surface temperature change 
-geographically.
-
-$H_a$ = There is variation in earth surface temperature change geographically.
-
-
-$H_o$
-Canada has experienced earth surface temperature change to the same degree as 
-the global average.
-
-$H_a$
-Canada has experienced a greater amount of earth surface temperature change 
-than the global average.
 
 ### Discussion
 
