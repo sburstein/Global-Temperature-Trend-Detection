@@ -743,54 +743,79 @@ The mean net (absolute value) year-to-year fluctuation in global average surface
 1980 is greater than the mean year-to-year fluctuation before 1980.
 
 ```{r net-change-bootstrap}
+post1980_net <- differences %>%
+  filter(year >= 1980)
+
+pre1980_net <- differences %>%
+  filter(year < 1980)
+
 set.seed(13)
 
-boot_dist <- numeric(5000)
+net_boot_dist <- numeric(5000)
 for (i in 1:5000) {
-  indices <- sample(1 : nrow(post1980), replace = TRUE)
-  boot_diff <- post1980 %>%
-    slice(indices) %>%
-    summarize(mean(comp)) %>%
+  post_boot_mean <- post1980_net %>%
+    slice(sample(1:nrow(post1980_net), replace = TRUE)) %>%
+    summarize(mean(differences)) %>%
     pull()
-  boot_dist[i] <- boot_diff
+  pre_boot_mean <- pre1980_net %>%
+    slice(sample(1:nrow(pre1980_net), replace = TRUE)) %>%
+    summarize(mean(differences)) %>%
+    pull()
+  net_boot_dist[i] <- abs(post_boot_mean) - abs(pre_boot_mean)
 }
-boot_dist <- tibble(boot_dist)
+net_boot_dist <- tibble(net_boot_dist)
 ```
 
 ```{r compare-to-20th-ci}
-diff_bootstrap_interval <- boot_dist %>%
-  summarize(lower = quantile(boot_dist, 0.005),
-            upper = quantile(boot_dist, 0.995)
+diff_bootstrap_interval <- net_boot_dist %>%
+  summarize(lower = quantile(net_boot_dist, 0.005),
+            upper = quantile(net_boot_dist, 0.995)
             )
 diff_bootstrap_interval
 ```
-Our 99% confidence interval for this hypothesis test is (0.357, 0.664).
-We can be 99% confident that the true mean difference of annual temperature averages and the 20th
-century average is between these bounds.
+Our 99% confidence interval for this hypothesis test is (-0.04495, 0.15154).
+We can be 99% confident that the difference in means of average year-to-year net fluctuation after 1980 and before 1980 lies within these bounds. 
 
 
-```{r compare-to-20th-testing, echo = FALSE}
-obs_diff <- post1980 %>%
-  summarize(mean(comp)) %>%
+```{r net-testing, echo = FALSE}
+post1980_net_diff_mean <- post1980_net %>%
+  summarize(abs(mean(differences))) %>%
   pull()
 
-boot_mean <- boot_dist %>%
-  summarize(mean(boot_dist)) %>%
+pre1980_net_diff_mean <- pre1980_net %>%
+  summarize(abs(mean(differences))) %>%
   pull()
 
-obs_diff
+net_boot_mean <- net_boot_dist %>%
+  summarize(mean(net_boot_dist)) %>%
+  pull()
 
-shifted <- boot_dist %>%
-  mutate(shifted = boot_dist - boot_mean)
+net_obs_diff <- post1980_net_diff_mean - pre1980_net_diff_mean
+net_obs_diff
 
-shifted %>%
-  mutate(extreme = if_else(shifted >= obs_diff, 1, 0)) %>%
+shifted_net <- net_boot_dist %>%
+  mutate(shifted = net_boot_dist - net_boot_mean)
+
+shifted_net %>%
+  mutate(extreme = if_else(shifted >= net_obs_diff, 1, 0)) %>%
   summarize(p_val = mean(extreme)) %>%
   pull()
 
 ```
+```{r net-clt-testing}
+differences <- differences %>%
+  mutate(post1980 = year >= 1980)
 
-
+t.test(differences ~ post1980,
+  data = differences,
+  mu = 0,
+  var.equal = FALSE,
+  alternative = "less",
+  conf.level = 0.99)
+```
+The p-values from both the simulation-based and CLT-based hypothesis tests performed here are both greater than $\alpha = 0.05$, so we fail to reject the null hypothesis.
+In this case, the p-value represents the likelihood of obtaining results where the net fluctuation from year to year in 1980 has a difference with respect to the net fluctuations before 1980 as great as observed or greater.
+In context of our question, this means we may not have sufficient evidence of an increase in overall temperature changes from year to year in more recent decades compared to earlier in the 20th century.
 
 
 
@@ -855,9 +880,8 @@ t.test(change ~ is_northamerica,
 From these two hypothesis tests, we fail to reject the null hypothesis that North America has a different 
 change in mean temperature from 1950-2010 than the rest of the world. The p-value was 0.268, indicating a .268 probability of observing results in which North America had a difference of overall temperature change at least as extreme as shown in this data set.
 
-However, we constructed a similar t-test for Europe, and when comparing the confidence intervals for the two, comparing Europe to the rest of the world produces a much smaller confidence interval (-.4124, .4133), versus that for North America: (1.2704, 2.0948). Additionally, the p-value for Europe's t-test was 0.9982, indicating a much higher likelihood of Europe having the same true mean change in land temperature as the rest of the world.
+However, we constructed a similar t-test for Europe, and when comparing the confidence intervals for the two, comparing Europe to the rest of the world produces a much smaller confidence interval (-.4124, .4133), versus that for North America: (1.2704, 2.0948). Additionally, the p-value for Europe's t-test was 0.9982, indicating a higher likelihood of Europe having the same true mean change in land temperature as the rest of the world.
 
-------add discussion points about this----
 
 
 
