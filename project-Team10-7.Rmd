@@ -52,13 +52,17 @@ earth surface temperature from early-20th-century levels to what the data show f
 
 For this question, we will use $\alpha = 0.01$.  
 Our hypotheses for this question are as follows:  
-$H_o$: The mean difference between annual average temperatures after 1980 and 
-the overall average temperature in the 20th century is not significantly greater than the 
-difference for years before 1980.  
+$H_a:$
+The mean anomaly of annual temperature averages with respect to the average temperature
+before 1980 is not greater than 0 (the mean value from before 1980 is used
+as the reference value for calculating anomalies, so the mean anomaly of pre-1980 values is assumed to be 0).  
 
-$H_a$: The mean difference between annual average temperatures after 1980 and 
-the overall average temperature in the 20th century is greater than the 
-difference for years before 1980.  
+
+$H_a:$ 
+The mean anomaly of annual temperature averages with respect to the average temperature
+before 1980 is greater than 0 (the mean anomaly of data before 1980 with respect
+to its average temperature).
+
 
 
 We predict that there will be sufficient evidence to support a statistically significant increase as detailed
@@ -350,7 +354,7 @@ ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
 ```
 In this visualization we can see the countries that have had the greatest change in average temperature from before 1950 to 2010-2013.
 
-### Methodology/Results
+### Results
 
 **Question 1:**. 
 *Is there evidence to suggest a statistically significant increase in mean
@@ -359,19 +363,16 @@ earth surface temperature from early-20th-century levels to what the data show f
 
 $H_o: \mu_{post1980} \leq \mu_{pre1980}$ 
 Null hypothesis:  
-The mean anomaly of annual temperature averages with respect to the 20th century average
-is not greater than 
+The mean anomaly of annual temperature averages with respect to the average temperature
+before 1980 is not greater than 0 (the mean value from before 1980 is used
+as the reference value for calculating anomalies, so the mean anomaly of pre-1980 values is assumed to be 0). 
 
-difference between mean earth surface temperature in recent years 
-(1980-2013) and the mean earth surface temperature throughout the 20th century 
-is not greater than the differences observed during the rest of the 20th 
-century.  
 
 $H_a: \mu_{post1980} > \mu_{pre1980}$ 
 Alternative hypothesis:  
-The difference between mean earth surface temperature in recent years 
-(1980-2013) and the mean earth surface temperature throughout the 20th century 
-is greater than the differences observed during the rest of the 20th century.
+The mean anomaly of annual temperature averages with respect to the average temperature
+before 1980 is greater than 0 (the mean anomaly of data before 1980 with respect
+to its average temperature).
 
 ```{r per-year-diffs-loop, echo = FALSE}
 differences <- c(nrow(annual_avg))
@@ -404,103 +405,86 @@ ggplot(data=differences, aes(x=year, y=differences)) +
 ```
 Based on this visualization, someone could potentially try to counter the argument for the existence of climate change, because there is a large fluctuation of positive and negative changes from year to year. Therefore, we then created a new data-frame to measure the overall difference between each year's average temperature and the average temperature across the 20th century, as shown below, and are using the comparison to the 20th century average for our hypothesis test.
 
-```{r}
-monthly_avgs <- df %>%
-  filter(year < 2000) %>%
-  group_by(month) %>%
-  summarize(avg = mean(LandAverageTemperature)) 
 
-
-
-
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r compare-to-20th-century, echo = FALSE}
-avg_20thcentury <- annual_avg %>%
-  filter(year < 2000) %>%
+```{r create-anomalies-data, echo = FALSE}
+avg_to1980 <- annual_avg %>%
+  filter(year < 1980) %>%
   summarize(mean(avg)) %>%
   pull()
 
-comp <- c(nrow(annual_avg))
-
-for (i in 1:nrow(annual_avg) - 1) {
-  
-  comp[i] <- annual_avg$avg[i+1] - avg_20thcentury
-}
-
-comparison_to_20th <- tibble(comp)
-comparison_to_20th <- tibble::rowid_to_column(comparison_to_20th, "year")
-comparison_to_20th <- comparison_to_20th %>%
-  mutate(year = 1900 + year)
+annual_avg <- annual_avg %>%
+  mutate(anomaly = avg - avg_to1980,
+         post1980 = year >= 1980)
 ```
 
-```{r visualization-compare-to-avg, echo = FALSE}
-ggplot(data=comparison_to_20th, aes(x=year, y=comp)) +
-  geom_bar(stat="identity", aes(fill=comp)) +
+```{r visualization-anomalies, echo = FALSE}
+ggplot(data=annual_avg, aes(x=year, y=anomaly)) +
+  geom_bar(stat="identity", aes(fill=anomaly)) +
   labs(title=
-  "Anomalies of average temperatures \n with respect to 20th century average",
+  "Anomalies of average temperatures \nwith respect to 1900-1980 average",
     x = "Year",
-    y = "Difference from 20th century average",
-    fill = "Differences") + 
+    y = "Difference from 1900-1980 average",
+    fill = "Difference amount") + 
   theme_economist_mod() + 
   scale_fill_gradientn(colours = gradientcolors) +
   legend_mod()
 ```
 
-```{r compare-to-20th-bootstrap, echo = FALSE}
-post1980 <- comparison_to_20th %>%
-  filter(year >= 1980)
+```{r anomaly-bootstrap, echo = FALSE}
+post <- annual_avg %>%
+  filter(post1980 == TRUE) 
+
+pre <- annual_avg %>%
+  filter(post1980 == FALSE)
 
 set.seed(7)
 
 boot_dist <- numeric(5000)
+
 for (i in 1:5000) {
-  indices <- sample(1 : nrow(post1980), replace = TRUE)
-  boot_diff <- post1980 %>%
-    slice(indices) %>%
-    summarize(mean(comp)) %>%
+  post_mean <- post %>%
+    slice(sample(1:nrow(post), replace = TRUE)) %>%
+    summarize(mean(anomaly)) %>%
     pull()
-  boot_dist[i] <- boot_diff
+  pre_mean <- pre %>%
+    slice(sample(1:nrow(pre), replace = TRUE)) %>%
+    summarize(mean(anomaly)) %>%
+    pull()
+  boot_dist[i] <- post_mean - pre_mean
 }
+
 boot_dist <- tibble(boot_dist)
+boot_dist
 ```
 
-```{r compare-to-20th-ci}
+```{r anomaly-ci}
 diff_bootstrap_interval <- boot_dist %>%
   summarize(lower = quantile(boot_dist, 0.005),
             upper = quantile(boot_dist, 0.995)
             )
 diff_bootstrap_interval
 ```
-Our 99% confidence interval for this hypothesis test is (0.4711, 0.790).
-We can be 99% confident that the true mean difference of annual temperature averages and the 20th
-century average is between these bounds.
+Our 99% confidence interval for this hypothesis test is (0.5514, 0.8941).
+We can be 99% confident that the true mean anomaly of annual temperature averages after 1980 with respect to the average temperature before 1980 is between these bounds.
 
 
-```{r compare-to-20th-testing, echo = FALSE}
-obs_diff <- post1980 %>%
-  summarize(mean(comp)) %>%
+```{r anomaly-testing, echo = FALSE}
+pre_mean <- pre %>%
+  summarize(mean(anomaly)) %>%
   pull()
+
+post_mean <- post %>%
+  summarize(mean(anomaly)) %>%
+  pull()
+
+obs_diff <- post_mean - pre_mean
 
 boot_mean <- boot_dist %>%
   summarize(mean(boot_dist)) %>%
   pull()
 
 obs_diff
+boot_mean
 
 shifted <- boot_dist %>%
   mutate(shifted = boot_dist - boot_mean)
@@ -513,40 +497,37 @@ shifted %>%
 
 ```{r compare-to-20th-sim-viz, echo = FALSE}
 ggplot(data = shifted, aes(x = shifted)) +
-  geom_histogram(color = "#4C566A", fill = "#88C0D0",bins=40) +
+  geom_histogram(color = "#4C566A", fill = "#88C0D0",bins=50) +
   geom_vline(xintercept = obs_diff, color = "#BF616A", lwd=1) +
   annotate("text", 
-           x = obs_diff - 0.04, y = 300, 
+           x = obs_diff - 0.045, y = 350, 
            label= paste("Observed difference: \n", round(obs_diff, 4)),
            angle = 90, size = 5) + 
-  labs(title = "Simulated null distribution of differences",
-       subtitle = "Average annual land temp. minus 20th century average temp.",
+  labs(title = "Simulated null distribution of post-1980 anomalies",
+       subtitle = 
+         "Average annual land temp. after 1980 minus average temp. before 1980",
        x = "Mean difference in temperature",
        y = "Count") +
   theme_economist_mod() 
 ```
 
 ```{r compare-to-20th-clt, echo = FALSE}
-comparison_to_20th <- comparison_to_20th %>%
-  mutate(post1980 = year >= 1980) 
-
-t.test(comp ~ post1980,
-  data = comparison_to_20th,
+t.test(anomaly ~ post1980,
+  data = annual_avg,
   mu = 0,
   var.equal = FALSE,
   alternative = "less",
   conf.level = 0.99)
+
 ```
 
 In both approaches used in this analysis, the p-value is well under $\alpha = 0.01$, 
 so we reject this null hypothesis.
 
 The p-value in this approach is the probability of obtaining results in which 
-the post-1980 data exhibit at least the observed difference between the average 
-annual temperature and the average 20th century temperature, under the assumption
-that the mean earth surface temperatures after 1980 do not differ from the means of pre-1980
-years by a statistically significant amount. From both tests, 
-the p-value was extremely small: we observed a 0 p-value in the simulation-based 
+the post-1980 data exhibit an anomaly with respect to the pre-1980 average temperature 
+as large as observed or greater, assuming under the null hypothesis that the post-1980
+temperatures are not significantly different from the pre-1980 temperatures. From both tests, the p-value was extremely small: we observed a 0 p-value in the simulation-based 
 approach. 
 
 In context of our question, this indicates that there is evidence to support a 
