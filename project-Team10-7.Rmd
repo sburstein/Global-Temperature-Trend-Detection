@@ -97,8 +97,9 @@ Finally, we will evaluate how the changes in earth surface temperature may diffe
 With Europe and North America having had large roles in industrialization, globalization, and technological developments, all of which have been cited as major contributors to climate change, we wanted to consider if this might be manifested
 in the amount of climate change exhibited in the last century in those continents.
 
-*4. Has North America experienced a greater change in annual average temperatures from the first half
-of the 20th century to 2010 than other continents? Has Europe?*
+*4. Has North America experienced a greater change in annual average 
+temperatures from the first half of the 20th century to 2010 than other 
+continents? Has Europe?*
 
 Our hypotheses for this two-part question are as follows:
 North America -  
@@ -133,7 +134,7 @@ respective land temperature, coordinates, and Country, which will be used to
 investigate changes in climate over time. There are 239,177 rows in the major 
 city dataset. 
 
-**(By Time (for `GlobalLandTemperaturesByMajorCity`))**
+**(By Time (for `GlobalTemperatures`))**
 
 Each observation in `GlobalTemperatures` is a numeric date/time value 
 (described below) and its respective land temperature, max temperature, 
@@ -361,7 +362,7 @@ In this visualization we can see the countries that have had the greatest change
 earth surface temperature from early-20th-century levels to what the data show for more recent years?*
 
 
-$H_o: \mu_{post1980} \leq \mu_{pre1980}$ 
+$H_o: \mu_{post1980} \leq \mu_{pre1980}$
 Null hypothesis:  
 The mean anomaly of annual temperature averages with respect to the average temperature
 before 1980 is not greater than 0 (the mean value from before 1980 is used
@@ -664,6 +665,9 @@ significant increase in the average degree of temperature change from before 198
 
 
 After failing to reject the null hypothesis above, we then considered performing the same test for the data before and after the year 2000. The linear model as shown below suggests a steeper incline than 1980.
+
+
+
 ```{r 2000-lm-viz}
 ggplot(data=annual_avg, aes(x=year, y=avg, color=post2000)) +
   geom_point(size = 5, alpha = 0.7) +
@@ -903,9 +907,35 @@ the rate of change of temperature has increased, especially since 1975.
 However, we were also able to use hypothesis testing to support climate change.
 In our first hypothesis test, we found evidence that the mean Earth temperature
 from 1980 to 2013 is greater than the mean Earth temperatures in the 20th 
-century.
+century.Our second hypothesis test found  insufficient evidence of a 
+statistically significant increase in the average degree of temperature change 
+from before 1980 to after 1980, but did find a statistically significant 
+increase in average degree of temperature change after 2000. While there 
+the dataset had limited values after 2000, it still shows evidence that
+global warming is becoming more severe. This could be due to increased
+greenhouse gas emissions in recent years. Our third hypothesis test found that 
+we may not have sufficient evidence of an increase in overall temperature 
+changes from year to year in more recent decades compared to earlier in the 20th 
+century. However, temperature is still increasing. The last hypothesis test 
+found that both Europe and the United States of America do not significantly 
+differ from the mean change in temperature globally but that the USA is more 
+variable with their temperature changes. This provides evidence towards the 
+effectiveness of initiatives in the European Union against climate change (such
+as the Paris Agreement) that the USA refrained from participating in.
 
-** Add the outcomes of our other hypothesis tests once we finish them
+While our findings supported the existence of climate change, it is important
+to critique our data and methods. The dataset that we found included a wide 
+variety of cases, but was limited. For example, there were less European and
+South American cities included than Asian cities. This limits our ability to
+draw conclusions about Europe and South America. Another limitation was the lack
+of data in earlier years. The dataset included many NA values in the earliest 
+years, which is why we had to focus our analysis on the last hundred years. We 
+also have to take into account the fact that temperature collecting 
+equipment has improved over time, so more recent observations are more 
+accurate than older observations.
 
+Some limitations of our methods were,
+
+If we were able to restart the project, 
 
 
