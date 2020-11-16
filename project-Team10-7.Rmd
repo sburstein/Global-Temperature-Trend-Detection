@@ -968,8 +968,7 @@ par(mai = c(0, 0, 0.2, 0), xaxs = "i", yaxs = "i")
 customColorGrad <- RColorBrewer::brewer.pal(100, 'YlOrRd')
 
 mapCountryData(geo_country_df, nameColumnToPlot="change",
-               mapTitle= "Temperature Change",
-    
+               mapTitle= "Temperature Change 1950-2010 by Country",
                colourPalette = customColorGrad, # equiv. to "heat" colourPalette
                oceanCol="lightblue",
                missingCountryCol="white")
@@ -980,37 +979,54 @@ mapCountryData(geo_country_df, nameColumnToPlot="change",
 Throughout our analysis, we saw clear evidence that climate change exists and 
 that global land and ocean temperatures are increasing to an unprecedented 
 extent at an extraordinary rate. As seen in our linear regression models and 
-associated scatter plots, there is meaningful evidence that the rate of change 
-of temperature has increased, especially since 1975. 
-However, we were also able to use hypothesis testing to support climate change.
-In our first hypothesis test, we found evidence that the mean Earth temperature
-from 1980 to 2013 is greater than the mean Earth temperatures in the 20th 
-century. Our second hypothesis test found insufficient evidence of a 
-statistically significant increase in the average degree of temperature change 
-from before 1980 to after 1980, but did find a statistically significant 
-increase in average degree of temperature change after 2000. While 
-the data set had limited values after 2000, it still shows evidence that
-global warming is becoming more severe. This could be due to increased
-greenhouse gas emissions in recent years. Our third hypothesis test found that 
-we may not have sufficient evidence of an increase in overall temperature 
-changes from year to year in more recent decades compared to earlier in the 20th 
-century. However, temperature is still increasing. The last hypothesis test 
-found that both Europe and the United States of America do not significantly 
-differ from the mean change in temperature globally, but that the U.S. is more 
-variable with their temperature changes. This provides evidence towards the 
-effectiveness of initiatives in the European Union against climate change (such
-as the Paris Agreement) that the USA refrained from participating in.
+associated scatter plots, there is meaningful evidence that the rate of 
+temperature change has accelerated, especially since 1975. 
+
+Additionally, we were able to use hypothesis testing to support our claim that 
+mean annual temperatures are increasing. In our first hypothesis test, we 
+concluded that there is a statistically significant increase in mean earth 
+surface temperature from early-20th-century levels to the present. Furthermore, 
+the mean temperature from years 1980 through 2013 is greater than the mean Earth
+temperature of the entire 20th century. 
+
+Our second hypothesis test found insufficient evidence of a statistically 
+significant increase in the average degree of temperature change from before 
+1980 to after 1980, but did find a statistically significant increase in average
+temperature change since 2000. While the data sets have limited values for years 
+after 2000, it still shows evidence that global warming trends are becoming more
+severe. This could be due to numerous confounding effects, including human 
+causes such as increased greenhouse gas emissions in recent years. 
+
+Our third hypothesis test found that there is not sufficient evidence of an 
+increase in global, annual temperature change in more recent decades compared to
+the earlier 20th century. However, temperature is still increasing. This result 
+is likely due to limitations in our data, as it is widely established in the 
+scientific community that the rate of annual temperature change has increased in 
+recent decades per NOAA: 
+[link](https://www.climate.gov/news-features/understanding-climate/climate-change-global-temperature#:~:text=Change%20over%20time&text=According%20to%20the%20NOAA%202019,more%20than%20twice%20as%20great.)
+
+The last hypothesis test found that both Europe and the United States of America
+do not significantly differ from the mean change in temperature globally. 
+However, it also confirms that the U.S. is subject to more variable temperature 
+fluctuations. This could provide evidence towards the effectiveness of 
+initiatives in the European Union against climate change - such as the Paris 
+Climate Accord - which the USA withdrew from in 2017.
 
 While our findings supported the existence of climate change, it is important
-to critique our data and methods. The dataset that we found included a wide 
-variety of cases, but was limited. For example, there were less European and
-South American cities included than Asian cities. This limits our ability to
-draw conclusions about Europe and South America. Another limitation was the lack
-of data in earlier years. The dataset included many NA values in the earliest 
-years, which is why we had to focus our analysis on the last hundred years. We 
-also have to take into account the fact that temperature collecting 
-equipment has improved over time, so more recent observations are more 
-accurate than older observations.
+to also critique our data and methods. The data sets, 
+`GlobalLandTemperaturesByMajorCity.csv` and `GlobalTemperatures.csv` attempt to 
+comprehensively describe wide ranging global effects from 1849 to 2013. However 
+there are inherent limitations in attempting this, as it fails to adequately or 
+equally monitor all regions over this time period. For example, there were less 
+European and South American cities included than Asian cities. This limits our 
+ability to draw conclusions about trends in temperature change across Europe and
+South America for the same time period. Another limitation was the lack of data 
+from earlier years. The data set included many NA values in the years 1849-1900,
+which is why we had to focus our analysis more specifically on the past 100 
+years. We also need to express that temperature collection and recording methods
+have improved over time. Thus, we have more confidence that recent 
+observations are generally more accurate than observations preceding the digital 
+revolution.
 
 Some limitations of our methods were,
 
