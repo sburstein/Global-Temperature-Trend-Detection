@@ -45,57 +45,64 @@ last 30 years.
 Our main research question will be:  
 **Is there significant evidence to support the existence of climate change?**  
 
-To evaluate this, we will conduct comprehensive hypothesis tests on four sub-questions.
+To evaluate this, we will conduct comprehensive hypothesis tests on four 
+sub-questions.
 
 *1: Is there evidence to suggest a statistically significant increase in mean
-earth surface temperature from early-20th-century levels to what the data show for more recent years?*. 
+earth surface temperature from early-20th-century levels to what the data show 
+for more recent years?*. 
 
 For this question, we will use $\alpha = 0.01$.  
 Our hypotheses for this question are as follows:  
 $H_a:$
-The mean anomaly of annual temperature averages with respect to the average temperature
-before 1980 is not greater than 0 (the mean value from before 1980 is used
-as the reference value for calculating anomalies, so the mean anomaly of pre-1980 values is assumed to be 0).  
+The mean anomaly of annual temperature averages with respect to the average 
+temperature before 1980 is not greater than 0 (the mean value from before 1980 
+is used as the reference value for calculating anomalies, so the mean anomaly of
+pre-1980 values is assumed to be 0).  
 
 
 $H_a:$ 
-The mean anomaly of annual temperature averages with respect to the average temperature
-before 1980 is greater than 0 (the mean anomaly of data before 1980 with respect
-to its average temperature).
+The mean anomaly of annual temperature averages with respect to the average 
+temperature before 1980 is greater than 0 (the mean anomaly of data before 1980 
+with respect to its average temperature).
 
 
 
-We predict that there will be sufficient evidence to support a statistically significant increase as detailed
-above, which brings us to the next question:  
+We predict that there will be sufficient evidence to support a statistically 
+significant increase as detailed above, which brings us to the next question:  
 
-*2: Is the earth changing/increasing temperature at a faster rate now than it was in 
-the early 20th century?*
+*2: Is the earth changing/increasing temperature at a faster rate now than it 
+was in the early 20th century?*
 
-For this question, we will record the observed average rates of change (slope) for every
-five-year period, and test whether the mean slope after 1980 is greater than the mean slope before 1980
-by a statistically significant margin. Because there are only 23 five-year segments between 1900 and 2010, we will 
+For this question, we will record the observed average rates of change (slope) 
+for every five-year period, and test whether the mean slope after 1980 is 
+greater than the mean slope before 1980 by a statistically significant margin. 
+Because there are only 23 five-year segments between 1900 and 2010, we will 
 use a lower $\alpha = 0.01$ level of 0.05.
 
 Our hypotheses for this question are as follows:
-$H_o$: The rate at which the average global land temperature increased after 1980 
-is not greater than the rate of temperature increase starting from 1900
+$H_o$: The rate at which the average global land temperature increased after 
+1980 is not greater than the rate of temperature increase starting from 1900
 based on their respective linear models.
 
-$H_a$: The rate at which the average global land temperature increased after 1980 
-is greater than the rate of temperature increase starting from 1900
+$H_a$: The rate at which the average global land temperature increased after 
+1980 is greater than the rate of temperature increase starting from 1900
 based on their respective linear models.  
 
 
-Relating to the previous question, which looks at the rates of presumed increase, we will also
-evaluate net change (positive of negative).  
+Relating to the previous question, which looks at the rates of presumed 
+increase, we will also evaluate net change (positive of negative).  
 *3. Do the data provide evidence of a greater degree of net fluctuation from the
-overall 20th century average temperature (positive or negative) after 1980 than was present
-before 1980? *
+overall 20th century average temperature (positive or negative) after 1980 than 
+was present before 1980? *
 
 
-Finally, we will evaluate how the changes in earth surface temperature may differ geographically.
-With Europe and North America having had large roles in industrialization, globalization, and technological developments, all of which have been cited as major contributors to climate change, we wanted to consider if this might be manifested
-in the amount of climate change exhibited in the last century in those continents.
+Finally, we will evaluate how the changes in earth surface temperature may 
+differ geographically. With Europe and North America having had large roles in 
+industrialization, globalization, and technological developments, all of which 
+have been cited as major contributors to climate change, we wanted to consider 
+if this might be manifested in the amount of climate change exhibited in the 
+last century in those continents.
 
 *4. Has North America experienced a greater change in annual average 
 temperatures from the first half of the 20th century to 2010 than other 
@@ -103,11 +110,12 @@ continents? Has Europe?*
 
 Our hypotheses for this two-part question are as follows:
 North America -  
-$H_{o}$: The change in mean temperature from before 1950 to post-2010 in North America 
-is equal to the change in temperature observed in the rest of the world.  
+$H_{o}$: The change in mean temperature from before 1950 to post-2010 in North 
+America is equal to the change in temperature observed in the rest of the world.  
 
-$H_{a}$: The change in mean temperature from before 1950 to post-2010 in North America 
-is not equal to the change in temperature observed in the rest of the world.  
+$H_{a}$: The change in mean temperature from before 1950 to post-2010 in North 
+America is not equal to the change in temperature observed in the rest of the 
+world.  
 
 
 Europe -  
@@ -119,7 +127,8 @@ is not equal to the change in temperature observed in the rest of the world.
 
 
 ### The Data:
-We found this dataset on Kaggle (https://www.kaggle.com/berkeleyearth/climate-change-earth-surface-temperature-data).
+We found this dataset on Kaggle 
+(https://www.kaggle.com/berkeleyearth/climate-change-earth-surface-temperature-data).
 The data was originally compiled by the Berkeley Earth Data Lab from 
 16 pre-existing archives, and it was updated to Kaggle in 2017. It is important
 to note that many of the earlier years include NA values, which is why we 
@@ -183,7 +192,8 @@ df <- df %>%
            month >= 9 & month < 12 ~ "autumn"
          )) 
 
-df$Country <- replace(df$Country, df$Country=="Congo (Democratic Republic Of The)","Congo")
+df$Country <- replace(df$Country, df$Country == 
+                        "Congo (Democratic Republic Of The)", "Congo")
  
 ```
 
@@ -223,8 +233,11 @@ ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   theme_economist_mod() +
   guides(col = guide_legend(override.aes = list(size=4)))
 ```
-Based on this initial visualization, there seems to be a high amount of uncertainty in the average land temperature in the earlier data. Going forward, we will only use the data after 1900.
-Overall, across all seasons, there seems to be an increasing trend in average land temperature after roughly 1975. 
+Based on this initial visualization, there seems to be a high amount of 
+uncertainty in the average land temperature in the earlier data. Going forward, 
+we will only use the data after 1900. 
+Overall, across all seasons, there seems to be an increasing trend in average 
+land temperature after roughly 1975. 
 
 ```{r filter-years, echo = FALSE}
 df <- df %>%
@@ -244,7 +257,10 @@ ggplot(data=df, aes(x=dt, y=LandAndOceanAverageTemperature)) +
   theme_economist_mod() +
   guides(col = guide_legend(override.aes = list(size=4)))
 ```
-Based on the second visualization, the average land/ocean temperature seems to increase more steeply after 1975 than the average land temperature. The values for spring and autumn in the land/ocean data are also much more similar than they are for just land.
+Based on the second visualization, the average land/ocean temperature seems to 
+increase more steeply after 1975 than the average land temperature. The values 
+for spring and autumn in the land/ocean data are also much more similar than 
+they are for just land.
 
 
 ```{r annual-avg-viz, echo = FALSE}
@@ -264,7 +280,10 @@ ggplot(data=annual_avg, aes(x=year, y=avg)) +
   theme(legend.position="right")
 
 ```
-When we plot the average annual land temperature (an average of the data points from each month), we can visualize a more extreme change in average land temperature over time than when each month is plotted individually. This is marked by a more severe uptick since 1980.
+When we plot the average annual land temperature (an average of the data points 
+from each month), we can visualize a more extreme change in average land 
+temperature over time than when each month is plotted individually. This is 
+marked by a more severe uptick since 1980.
 
 ```{r facet-season, echo = FALSE}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
@@ -295,7 +314,8 @@ ggplot(data=annual_avg, aes(x = year)) +
   )
 ```
   
-The upward trend visualized in the first few graphs is consistent over each season, as well as for the annual average temperature highs and lows.
+The upward trend visualized in the first few graphs is consistent over each 
+season, as well as for the annual average temperature highs and lows.
 
 
 
@@ -353,27 +373,30 @@ ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
   guides(fill = guide_colorbar(label.position = "left"),label.hjust=1) 
   
 ```
-In this visualization we can see the countries that have had the greatest change in average temperature from before 1950 to 2010-2013.
+In this visualization we can see the countries that have had the greatest change
+in average temperature from before 1950 to 2010-2013.
 
 ### Results
 
 **Question 1:**. 
 *Is there evidence to suggest a statistically significant increase in mean
-earth surface temperature from early-20th-century levels to what the data show for more recent years?*
+earth surface temperature from early-20th-century levels to what the data show 
+for more recent years?*
 
 
 $H_o: \mu_{post1980} \leq \mu_{pre1980}$
 Null hypothesis:  
-The mean anomaly of annual temperature averages with respect to the average temperature
-before 1980 is not greater than 0 (the mean value from before 1980 is used
-as the reference value for calculating anomalies, so the mean anomaly of pre-1980 values is assumed to be 0). 
+The mean anomaly of annual temperature averages with respect to the average 
+temperature before 1980 is not greater than 0 (the mean value from before 1980 
+is used as the reference value for calculating anomalies, so the mean anomaly of
+pre-1980 values is assumed to be 0). 
 
 
 $H_a: \mu_{post1980} > \mu_{pre1980}$ 
 Alternative hypothesis:  
-The mean anomaly of annual temperature averages with respect to the average temperature
-before 1980 is greater than 0 (the mean anomaly of data before 1980 with respect
-to its average temperature).
+The mean anomaly of annual temperature averages with respect to the average 
+temperature before 1980 is greater than 0 (the mean anomaly of data before 1980 
+with respect to its average temperature).
 
 ```{r per-year-diffs-loop, echo = FALSE}
 differences <- c(nrow(annual_avg))
@@ -404,7 +427,13 @@ ggplot(data=differences, aes(x=year, y=differences)) +
   scale_fill_gradientn(colours = c("#EBCB8B","#D08770", "#BF616A")) +
   legend_mod()
 ```
-Based on this visualization, someone could potentially try to counter the argument for the existence of climate change, because there is a large fluctuation of positive and negative changes from year to year. Therefore, we then created a new data-frame to measure the overall difference between each year's average temperature and the average temperature across the 20th century, as shown below, and are using the comparison to the 20th century average for our hypothesis test.
+Based on this visualization, someone could potentially try to counter the 
+argument for the existence of climate change, because there is a large 
+fluctuation of positive and negative changes from year to year. Therefore, we 
+then created a new data-frame to measure the overall difference between each 
+year's average temperature and the average temperature across the 20th century, 
+as shown below, and are using the comparison to the 20th century average for our 
+hypothesis test.
 
 
 ```{r create-anomalies-data, echo = FALSE}
@@ -466,7 +495,9 @@ diff_bootstrap_interval <- boot_dist %>%
 diff_bootstrap_interval
 ```
 Our 99% confidence interval for this hypothesis test is (0.5514, 0.8941).
-We can be 99% confident that the true mean anomaly of annual temperature averages after 1980 with respect to the average temperature before 1980 is between these bounds.
+We can be 99% confident that the true mean anomaly of annual temperature 
+averages after 1980 with respect to the average temperature before 1980 is 
+between these bounds.
 
 
 ```{r anomaly-testing, echo = FALSE}
@@ -522,14 +553,15 @@ t.test(anomaly ~ post1980,
 
 ```
 
-In both approaches used in this analysis, the p-value is well under $\alpha = 0.01$, 
-so we reject this null hypothesis.
+In both approaches used in this analysis, the p-value is well under 
+$\alpha = 0.01$, so we reject this null hypothesis.
 
 The p-value in this approach is the probability of obtaining results in which 
-the post-1980 data exhibit an anomaly with respect to the pre-1980 average temperature 
-as large as observed or greater, assuming under the null hypothesis that the post-1980
-temperatures are not significantly different from the pre-1980 temperatures. From both tests, the p-value was extremely small: we observed a 0 p-value in the simulation-based 
-approach. 
+the post-1980 data exhibit an anomaly with respect to the pre-1980 average 
+temperature as large as observed or greater, assuming under the null hypothesis 
+that the post-1980 temperatures are not significantly different from the 
+pre-1980 temperatures. From both tests, the p-value was extremely small: 
+we observed a 0 p-value in the simulation-based approach. 
 
 In context of our question, this indicates that there is evidence to support a 
 statistically significant increase in temperature over the 20th century. This is
@@ -537,8 +569,8 @@ important because this is one of the main arguments used against climate change.
 
 
 **Question 2:**
-*Is the earth changing/increasing temperature at a faster rate now than it was in 
-the early 20th century?*
+*Is the earth changing/increasing temperature at a faster rate now than it was 
+in the early 20th century?*
 
 $H_o: \beta_{post1980} \leq \beta_{pre1980}$ 
 Null hypothesis:  
@@ -653,18 +685,21 @@ boot_dist_slope %>%
   mutate(extreme = ifelse(boot_dist_slope >= post1980slope, 1, 0))%>%
   summarize(p_value= mean(extreme))
 ```
-From the above simulation-based test, we found a p-value of 0.0592. Because this is 
-not under $\alpha = 0.05$, we fail to reject this null hypothesis.
+From the above simulation-based test, we found a p-value of 0.0592. Because this
+is not under $\alpha = 0.05$, we fail to reject this null hypothesis.
 
-Here, the p-value is the probability of obtaining results in which the difference in
-average rate of change between post- and pre-1980 temperatures is at least as great as what was observed 
-in the data.
+Here, the p-value is the probability of obtaining results in which the 
+difference in average rate of change between post- and pre-1980 temperatures is 
+at least as great as what was observed in the data.
 
-In context of our question, this suggests we may have insufficient evidence of a statistically
-significant increase in the average degree of temperature change from before 1980 to after 1980. 
+In context of our question, this suggests we may have insufficient evidence of a
+statistically significant increase in the average degree of temperature change 
+from before 1980 to after 1980. 
 
 
-After failing to reject the null hypothesis above, we then considered performing the same test for the data before and after the year 2000. The linear model as shown below suggests a steeper incline than 1980.
+After failing to reject the null hypothesis above, we then considered performing
+the same test for the data before and after the year 2000. The linear model as 
+shown below suggests a steeper incline than 1980.
 
 
 
@@ -705,21 +740,26 @@ boot_dist_slope %>%
   summarize(p_value= mean(extreme))
 ```
 
-In the hypothesis test for years after 2000, the p-value is 0.0214, so we can reject this null hypothesis.
-This p-value indicates a 0.0214 probability of obtaining results in which the post-2000 data points have a mean 
-rate of change equal to or greater than the one observed, assuming that the rates of change truly are equal.
+In the hypothesis test for years after 2000, the p-value is 0.0214, so we can 
+reject this null hypothesis. This p-value indicates a 0.0214 probability of 
+obtaining results in which the post-2000 data points have a mean rate of change 
+equal to or greater than the one observed, assuming that the rates of change 
+truly are equal.
 
-In context of our original research question, this suggests that the earth surface temperature changes that 
-we examined in part 1 might be occurring at a quickening pace over time, with a decreasing probability of 
-obtaining results as or more extreme as observed (the p-values for the 1980s and 2000s tests). However, it should be noted that there is very limited data after 2000, so this p-value should not
-necessarily be interpreted as a practically significant value, and this test alone does not adequately answer
-our overall research question.
+In context of our original research question, this suggests that the earth 
+surface temperature changes that we examined in part 1 might be occurring at a 
+quickening pace over time, with a decreasing probability of obtaining results as
+or more extreme as observed (the p-values for the 1980s and 2000s tests). 
+However, it should be noted that there is very limited data after 2000, so this 
+p-value should not necessarily be interpreted as a practically significant 
+value, and this test alone does not adequately answer our overall research 
+question.
 
   
 **Question 3:**
 *Do the data provide evidence of a greater degree of net fluctuation from the
-overall 20th century average temperature (positive or negative) after 1980 than was present
-before 1980?*
+overall 20th century average temperature (positive or negative) after 1980 than 
+was present before 1980?*
 
 ```{r net-change}
 ggplot(data=differences, aes(x=year, y=abs(differences))) +
@@ -737,14 +777,16 @@ ggplot(data=differences, aes(x=year, y=abs(differences))) +
 
 $H_o:\mu_{pre1980net} \leq \mu_{post1980net} $ 
 Null hypothesis:  
-The mean net (absolute value) year-to-year fluctuation in global average surface temperatures after
-1980 is not greater than the mean year-to-year fluctuation before 1980.
+The mean net (absolute value) year-to-year fluctuation in global average surface
+temperatures after 1980 is not greater than the mean year-to-year fluctuation 
+before 1980.
 
 
 $H_a:\mu_{pre1980net} > \mu_{post1980net} $ 
 Alternative hypothesis:  
-The mean net (absolute value) year-to-year fluctuation in global average surface temperatures after
-1980 is greater than the mean year-to-year fluctuation before 1980.
+The mean net (absolute value) year-to-year fluctuation in global average surface
+temperatures after 1980 is greater than the mean year-to-year fluctuation before
+1980.
 
 ```{r net-change-bootstrap}
 post1980_net <- differences %>%
@@ -778,7 +820,8 @@ diff_bootstrap_interval <- net_boot_dist %>%
 diff_bootstrap_interval
 ```
 Our 99% confidence interval for this hypothesis test is (-0.04495, 0.15154).
-We can be 99% confident that the difference in means of average year-to-year net fluctuation after 1980 and before 1980 lies within these bounds. 
+We can be 99% confident that the difference in means of average year-to-year net
+fluctuation after 1980 and before 1980 lies within these bounds. 
 
 
 ```{r net-testing, echo = FALSE}
@@ -806,6 +849,7 @@ shifted_net %>%
   pull()
 
 ```
+
 ```{r net-clt-testing}
 differences <- differences %>%
   mutate(post1980 = year >= 1980)
@@ -817,9 +861,14 @@ t.test(differences ~ post1980,
   alternative = "less",
   conf.level = 0.99)
 ```
-The p-values from both the simulation-based and CLT-based hypothesis tests performed here are both greater than $\alpha = 0.05$, so we fail to reject the null hypothesis.
-In this case, the p-value represents the likelihood of obtaining results where the net fluctuation from year to year in 1980 has a difference with respect to the net fluctuations before 1980 as great as observed or greater.
-In context of our question, this means we may not have sufficient evidence of an increase in overall temperature changes from year to year in more recent decades compared to earlier in the 20th century.
+The p-values from both the simulation-based and CLT-based hypothesis tests 
+performed here are both greater than $\alpha = 0.05$, so we fail to reject the 
+null hypothesis. In this case, the p-value represents the likelihood of 
+obtaining results where the net fluctuation from year to year in 1980 has a 
+difference with respect to the net fluctuations before 1980 as great as observed
+or greater. In context of our question, this means we may not have sufficient 
+evidence of an increase in overall temperature changes from year to year in more 
+recent decades compared to earlier in the 20th century.
 
 
 
@@ -827,10 +876,12 @@ In context of our question, this means we may not have sufficient evidence of an
 **Question 4:**
 
 $H_o: \mu_n = \mu_g$
-The change in mean temperature from before 1950 to post-2010 in North America is equal to the global change.
+The change in mean temperature from before 1950 to post-2010 in North America is 
+equal to the global change.
 
 $H_a: \mu_n \neq \mu_g$
-The change in mean temperature from before 1950 to post-2010 in North America is not equal to the global change.
+The change in mean temperature from before 1950 to post-2010 in North America is 
+not equal to the global change.
 
 ```{r addcontinent}
 changesbycountry %>%
@@ -881,10 +932,18 @@ t.test(change ~ is_northamerica,
        alternative = "two.sided",
        conf.level = 0.95)
 ```
-From these two hypothesis tests, we fail to reject the null hypothesis that North America has a different 
-change in mean temperature from 1950-2010 than the rest of the world. The p-value was 0.268, indicating a .268 probability of observing results in which North America had a difference of overall temperature change at least as extreme as shown in this data set.
+From these two hypothesis tests, we fail to reject the null hypothesis that 
+North America has a different change in mean temperature from 1950-2010 than the
+rest of the world. The p-value was 0.268, indicating a .268 probability of 
+observing results in which North America had a difference of overall temperature
+change at least as extreme as shown in this data set.
 
-However, we constructed a similar t-test for Europe, and when comparing the confidence intervals for the two, comparing Europe to the rest of the world produces a much smaller confidence interval (-.4124, .4133), versus that for North America: (1.2704, 2.0948). Additionally, the p-value for Europe's t-test was 0.9982, indicating a higher likelihood of Europe having the same true mean change in land temperature as the rest of the world.
+However, we constructed a similar t-test for Europe, and when comparing the 
+confidence intervals for the two, comparing Europe to the rest of the world 
+produces a much smaller confidence interval (-.4124, .4133), versus that for 
+North America: (1.2704, 2.0948). Additionally, the p-value for Europe's t-test 
+was 0.9982, indicating a higher likelihood of Europe having the same true mean 
+change in land temperature as the rest of the world.
 
 
 
