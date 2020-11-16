@@ -954,44 +954,34 @@ change in land temperature as the rest of the world.
 
 
 ```{r df-rworldmap}
-
-changesbycountry$country[12] <- "Ivory Coast"
-
-### Welcome to rworldmap ###
 #For a short introduction type : 	 vignette('rworldmap')
-#vignette('rworldmap')
+changesbycountry$country[12] <- "Ivory Coast" #prev. fail match w/ country code
 geo_country_df <- joinCountryData2Map(changesbycountry,
                                       joinCode = "NAME",
                                       nameJoinColumn = "country")
                   #specify verbose = TRUE arg. to get full country list
-#geo_country_df
-
-
-
 ```
 
 ```{r viz-rworldmap}
 
-par(mai=c(0,0,0.2,0),xaxs="i",yaxs="i")
-customColorGrad <-  colourPalette <- RColorBrewer::brewer.pal(6,'YlOrRd')
+par(mai = c(0, 0, 0.2, 0), xaxs = "i", yaxs = "i")
+customColorGrad <- RColorBrewer::brewer.pal(100, 'YlOrRd')
 
 mapCountryData(geo_country_df, nameColumnToPlot="change",
                mapTitle= "Temperature Change",
-               colourPalette= customColorGrad,
+    
+               colourPalette = customColorGrad, # equiv. to "heat" colourPalette
                oceanCol="lightblue",
                missingCountryCol="white")
 ```
-
-
-
-
 
 ### Discussion
 
 Throughout our analysis, we saw clear evidence that climate change exists and 
 that global land and ocean temperatures are increasing to an unprecedented 
-extent. As seen in our earlier visualizations, there is visual evidence that
-the rate of change of temperature has increased, especially since 1975. 
+extent at an extraordinary rate. As seen in our linear regression models and 
+associated scatter plots, there is meaningful evidence that the rate of change 
+of temperature has increased, especially since 1975. 
 However, we were also able to use hypothesis testing to support climate change.
 In our first hypothesis test, we found evidence that the mean Earth temperature
 from 1980 to 2013 is greater than the mean Earth temperatures in the 20th 
