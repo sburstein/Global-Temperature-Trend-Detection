@@ -950,12 +950,48 @@ was 0.9982, indicating a higher likelihood of Europe having the same true mean
 change in land temperature as the rest of the world.
 
 
+```{r}
+map(database = "world", regions = ".", exact = FALSE, boundary = TRUE)
+```
 
 
 
+```{r}
+install.packages('rworldmap',dependencies=TRUE)
+# from https://cran.r-project.org/web/packages/rworldmap/vignettes/rworldmap.pdf
+```
+
+```{r}
+library(rworldmap)
+
+changesbycountry$country[12] <- "Ivory Coast"
+
+### Welcome to rworldmap ###
+#For a short introduction type : 	 vignette('rworldmap')
+#vignette('rworldmap')
+geo_country_df <- joinCountryData2Map(changesbycountry,
+                                      joinCode = "NAME",
+                                      nameJoinColumn = "country")
+                  #specify verbose = TRUE arg. to get full country list
+#geo_country_df
 
 
 
+```
+
+```{r}
+
+scale_fill_gradientn(colours = c("#EBCB8B","#D08770", "#BF616A"))
+par(mai=c(0,0,0.2,0),xaxs="i",yaxs="i")
+customColorGrad <-  colourPalette <- RColorBrewer::brewer.pal(6,'YlOrRd')
+#https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/e5a6dcde-4a80-11e4-9553-005056977bd0/2639c6af-d83e-4d5b-8d3c-bdf046fb5048/images/screenshot.png
+
+mapCountryData(geo_country_df, nameColumnToPlot="change",
+               mapTitle= "Temperature Change",
+               colourPalette= customColorGrad,
+               oceanCol="lightblue",
+               missingCountryCol="white")
+```
 
 
 
