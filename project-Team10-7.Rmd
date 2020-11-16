@@ -704,6 +704,10 @@ shown below suggests a steeper incline than 1980.
 
 
 ```{r 2000-lm-viz}
+
+annual_avg <- annual_avg %>%
+  mutate(post2000 = year >= 2000)
+
 ggplot(data=annual_avg, aes(x=year, y=avg, color=post2000)) +
   geom_point(size = 5, alpha = 0.7) +
   geom_smooth(method="lm", se=FALSE, lwd = 2.5) +
@@ -960,24 +964,24 @@ change in land temperature as the rest of the world.
 ### Discussion
 
 Throughout our analysis, we saw clear evidence that climate change exists and 
-that global land and ocean temperatures are increasing at an unprecedented 
+that global land and ocean temperatures are increasing to an unprecedented 
 extent. As seen in our earlier visualizations, there is visual evidence that
 the rate of change of temperature has increased, especially since 1975. 
 However, we were also able to use hypothesis testing to support climate change.
 In our first hypothesis test, we found evidence that the mean Earth temperature
 from 1980 to 2013 is greater than the mean Earth temperatures in the 20th 
-century.Our second hypothesis test found  insufficient evidence of a 
+century. Our second hypothesis test found insufficient evidence of a 
 statistically significant increase in the average degree of temperature change 
 from before 1980 to after 1980, but did find a statistically significant 
-increase in average degree of temperature change after 2000. While there 
-the dataset had limited values after 2000, it still shows evidence that
+increase in average degree of temperature change after 2000. While 
+the data set had limited values after 2000, it still shows evidence that
 global warming is becoming more severe. This could be due to increased
 greenhouse gas emissions in recent years. Our third hypothesis test found that 
 we may not have sufficient evidence of an increase in overall temperature 
 changes from year to year in more recent decades compared to earlier in the 20th 
 century. However, temperature is still increasing. The last hypothesis test 
 found that both Europe and the United States of America do not significantly 
-differ from the mean change in temperature globally but that the USA is more 
+differ from the mean change in temperature globally, but that the U.S. is more 
 variable with their temperature changes. This provides evidence towards the 
 effectiveness of initiatives in the European Union against climate change (such
 as the Paris Agreement) that the USA refrained from participating in.
