@@ -98,9 +98,8 @@ based on their respective linear models.
 Relating to the previous question, which looks at the rates of presumed 
 increase, we will also evaluate net change (positive of negative).  
 
-*3. Do the data provide evidence of a greater degree of net fluctuation from the
-overall 20th century average temperature (positive or negative) after 1980 than 
-was present before 1980?*
+*3. Does the data provide evidence of a greater degree of net annual temperature
+fluctuation after 1980 than before 1980?*
 
 Finally, we will evaluate how the changes in earth surface temperature may 
 differ geographically. With Europe and North America having had large roles in 
@@ -209,7 +208,7 @@ df$Country <- replace(df$Country, df$Country ==
 
 # Methodology
 
-## Initial visualizations:
+## Initial Visualizations:
 
 ```{r ggplot-theme}
 theme_economist_mod <- function() {
@@ -763,9 +762,9 @@ question.
 
 ## Question 3
 
-***Do the data provide evidence of a greater degree of net fluctuation from the
-overall 20th century average temperature (positive or negative) after 1980 than 
-was present before 1980?***
+***Does the data provide evidence of a greater degree of net fluctuation in 
+annual global mean temperatures (positive or negative variability) for years 
+1980-2013 than years 1900-1980?***
 
 ```{r net-change}
 ggplot(data=differences, aes(x=year, y=abs(differences))) +
@@ -928,15 +927,6 @@ changesbycountry <- changesbycountry %>%
   is_northamerica = continent == "north_america")
 ```
 
-```{r ttest-europe}
-t.test(change ~ is_europe,
-       data = changesbycountry,
-       mu = 0,
-       var.equal = FALSE,
-       alternative = "two.sided",
-       conf.level = 0.95)
-```
-
 ```{r ttest-northamerica}
 t.test(change ~ is_northamerica,
        data = changesbycountry,
@@ -946,13 +936,22 @@ t.test(change ~ is_northamerica,
        conf.level = 0.95)
 ```
 
-From these two hypothesis tests, we fail to reject the null hypothesis that 
+From this first hypothesis test, we fail to reject the null hypothesis that 
 North America has a different change in mean temperature from 1950-2010 than the
 rest of the world. The p-value was 0.268, indicating a .268 probability of 
 observing results in which North America had a difference of overall temperature
 change at least as extreme as shown in this data set.
 
-However, we constructed a similar t-test for Europe, and when comparing the 
+```{r ttest-europe}
+t.test(change ~ is_europe,
+       data = changesbycountry,
+       mu = 0,
+       var.equal = FALSE,
+       alternative = "two.sided",
+       conf.level = 0.95)
+```
+
+We also constructed a similar t-test for Europe, and when comparing the 
 confidence intervals for the two, comparing Europe to the rest of the world 
 produces a much smaller confidence interval (-.4124, .4133), versus that for 
 North America: (1.2704, 2.0948). Additionally, the p-value for Europe's t-test 
