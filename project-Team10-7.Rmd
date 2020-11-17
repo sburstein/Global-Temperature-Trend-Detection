@@ -27,7 +27,8 @@ One of the biggest environmental issues facing our planet has been climate
 change. As fossil fuel emissions have increased, greenhouse gases have begun
 trapping heat in our atmosphere that has created severe impacts. These include
 increased global temperature and rising ocean levels, in addition to increased
-natural disasters. [NASA.gov Source](https://climate.nasa.gov/effects/). [USGS.gov Source](https://www.usgs.gov/faqs/how-can-climate-change-affect-natural-disasters-1?qt-news_science_products=0#qt-news_science_products)
+natural disasters. [NASA.gov Source](https://climate.nasa.gov/effects/). 
+[USGS.gov Source](https://www.usgs.gov/faqs/how-can-climate-change-affect-natural-disasters-1?qt-news_science_products=0#qt-news_science_products)
 
 Climate change is a significant issue that has also become a hot-button 
 political topic in recent years because of the failure of certain individuals, 
