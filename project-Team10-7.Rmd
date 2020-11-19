@@ -1045,8 +1045,9 @@ have improved over time. Thus, we have more confidence that recent
 observations are generally more accurate than observations preceding the digital 
 revolution.
 
-Some limitations of our methods were,
+There were some limitations with our methods. In our difference of means hypothesis tests, while we found that there was not a difference between Europe and America’s respective average change in temperature and the global change in temperature, our tests couldn’t explain the reasons why the differences did not exist. Another limitation of the difference of means test is that while we did not find enough evidence to reject the null hypothesis that there was no difference, it does not mean that a difference does not exist. A final limitation in our methods was that our hypothesis tests could not actually make decisions about what they were testing, they could only be used as aids in decision making.
 
-If we were able to restart the project, 
+If we were able to restart the project, we would have found a dataset that already contained all of the data we wanted to analyze. While we were able to join the two datasets together and perform our analysis, this was tedious compared to just using one dataset. If we used one dataset, we also could have performed more focused analysis on the data.
+
 
 
