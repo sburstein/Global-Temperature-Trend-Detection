@@ -1014,12 +1014,11 @@ after 2000, it still shows evidence that global warming trends are becoming more
 severe. This could be due to numerous confounding effects, including human 
 causes such as increased greenhouse gas emissions in recent years. 
 
-Our third hypothesis test found that there is not sufficient evidence of an 
-increase in global, annual temperature change in more recent decades compared to
-the earlier 20th century. However, temperature is still increasing. This result 
-is likely due to limitations in our data, as it is widely established in the 
-scientific community that the rate of annual temperature change has increased in 
-recent decades per NOAA: 
+Our third hypothesis test found that there is also sufficient evidence of an 
+increase in global, annual year-to-year temperature change in more recent decades (post-1980) 
+compared to the earlier 20th century. This result is supported by other findings from
+the scientific community, such as NOAA, which establishes that the rate of annual 
+temperature change has increased in recent decades: 
 [climate.gov Source](https://www.climate.gov/news-features/understanding-climate/climate-change-global-temperature#:~:text=Change%20over%20time&text=According%20to%20the%20NOAA%202019,more%20than%20twice%20as%20great.)
 
 The last hypothesis test found that both Europe and the United States of America
