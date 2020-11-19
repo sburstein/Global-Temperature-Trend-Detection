@@ -878,7 +878,7 @@ t.test(net_diff ~ post1980,
   mu = 0,
   var.equal = FALSE,
   alternative = "less",
-  conf.level = 0.99)
+  conf.level = 0.95)
 ```
 
 The p-values from both the simulation-based and CLT-based hypothesis tests 
