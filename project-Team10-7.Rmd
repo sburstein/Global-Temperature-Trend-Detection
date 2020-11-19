@@ -739,6 +739,14 @@ ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
      "Simulated null distribution of mean \nrates of change in temperature",
      x = "Average rate of change (slope)",
      y = "Count") +
+  annotate("text", 
+           x = post1980slope - 0.0035, y = 235, 
+           label= paste("Average observed post-1980 slope: \n", round(post1980slope, 4)),
+           angle = 90, size = 3.5) +
+  annotate("text", 
+           x = post2000slope + 0.0035, y = 235, 
+           label= paste("Average observed post-2000 slope: \n", round(post2000slope, 4)),
+           angle = 90, size = 3.5) +
     theme_economist_mod()
 
 boot_dist_slope %>% 
@@ -797,11 +805,14 @@ temperatures after 1980 is greater than the mean year-to-year fluctuation before
 1980.
 
 ```{r net-change-bootstrap}
+differences <- differences %>%
+  mutate(net_diff = abs(differences))
+
 post1980_net <- differences %>%
-  filter(year >= 1980)
+  filter(year >= 1980)  
 
 pre1980_net <- differences %>%
-  filter(year < 1980)
+  filter(year < 1980) 
 
 set.seed(13)
 
@@ -809,13 +820,13 @@ net_boot_dist <- numeric(5000)
 for (i in 1:5000) {
   post_boot_mean <- post1980_net %>%
     slice(sample(1:nrow(post1980_net), replace = TRUE)) %>%
-    summarize(mean(differences)) %>%
+    summarize(mean(net_diff)) %>%
     pull()
   pre_boot_mean <- pre1980_net %>%
     slice(sample(1:nrow(pre1980_net), replace = TRUE)) %>%
-    summarize(mean(differences)) %>%
+    summarize(mean(net_diff)) %>%
     pull()
-  net_boot_dist[i] <- abs(post_boot_mean) - abs(pre_boot_mean)
+  net_boot_dist[i] <- post_boot_mean - pre_boot_mean
 }
 net_boot_dist <- tibble(net_boot_dist)
 ```
@@ -828,17 +839,17 @@ diff_bootstrap_interval <- net_boot_dist %>%
 diff_bootstrap_interval
 ```
 
-Our 99% confidence interval for this hypothesis test is (-0.04495, 0.15154).
+Our 99% confidence interval for this hypothesis test is (-0.00639, 0.14843).
 We can be 99% confident that the difference in means of average year-to-year net
 fluctuation after 1980 and before 1980 lies within these bounds. 
 
 ```{r net-testing, echo = FALSE}
 post1980_net_diff_mean <- post1980_net %>%
-  summarize(abs(mean(differences))) %>%
+  summarize(mean(net_diff)) %>%
   pull()
 
 pre1980_net_diff_mean <- pre1980_net %>%
-  summarize(abs(mean(differences))) %>%
+  summarize(mean(net_diff)) %>%
   pull()
 
 net_boot_mean <- net_boot_dist %>%
@@ -862,7 +873,7 @@ shifted_net %>%
 differences <- differences %>%
   mutate(post1980 = year >= 1980)
 
-t.test(differences ~ post1980,
+t.test(net_diff ~ post1980,
   data = differences,
   mu = 0,
   var.equal = FALSE,
@@ -871,13 +882,14 @@ t.test(differences ~ post1980,
 ```
 
 The p-values from both the simulation-based and CLT-based hypothesis tests 
-performed here are both greater than $\alpha = 0.05$, so we fail to reject the 
+performed here are both less than $\alpha = 0.05$, so we can reject the 
 null hypothesis. In this case, the p-value represents the likelihood of 
-obtaining results where the net fluctuation from year to year in 1980 has a 
-difference with respect to the net fluctuations before 1980 as great as observed
-or greater. In context of our question, this means we may not have sufficient 
-evidence of an increase in overall temperature changes from year to year in more 
-recent decades compared to earlier in the 20th century.
+obtaining results where the difference in mean net fluctuation of average temperatures
+from year to year after 1980 versus the mean net fluctuation before 1980 is as great   
+as observed or greater. In context of our question, this suggests we have sufficient 
+evidence to argue that not only have temperatures increased over the 20th century,
+but they have become more extreme overall from year to year for both cold and hot 
+temperatures compared to earlier in the 20th century.
 
 ## Question 4
 
