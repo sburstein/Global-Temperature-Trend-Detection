@@ -211,7 +211,7 @@ df$Country <- replace(df$Country, df$Country ==
 
 ## Initial Visualizations:
 
-```{r ggplot-theme}
+```{r ggplot-theme, echo = FALSE}
 theme_economist_mod <- function() {
   theme_economist() + 
   theme(
@@ -231,7 +231,7 @@ gradientcolors <- c(
   "#B48EAD","#5E81AC","#A3BE8C","#EBCB8B","#D08770","#BF616A")
 ```
 
-```{r visualization-by-season, echo = FALSE}
+```{r visualization-by-season, message = FALSE, echo = FALSE}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   geom_point(aes(color=season), size=0.8) +
   labs(title = "Global average land temperatures since 1849",
@@ -271,7 +271,7 @@ increase more steeply after 1975 than the average land temperature. The values
 for spring and autumn in the land/ocean data are also much more similar than 
 they are for just land.
 
-```{r annual-avg-viz, echo = FALSE}
+```{r annual-avg-viz, message = FALSE, echo = FALSE}
 annual_avg <- df %>%
   group_by(year) %>%
   summarize(avg = mean(LandAverageTemperature),
@@ -489,10 +489,9 @@ for (i in 1:5000) {
 }
 
 boot_dist <- tibble(boot_dist)
-boot_dist
 ```
 
-```{r anomaly-ci}
+```{r anomaly-ci, echo = FALSE}
 diff_bootstrap_interval <- boot_dist %>%
   summarize(lower = quantile(boot_dist, 0.005),
             upper = quantile(boot_dist, 0.995)
@@ -519,9 +518,6 @@ obs_diff <- post_mean - pre_mean
 boot_mean <- boot_dist %>%
   summarize(mean(boot_dist)) %>%
   pull()
-
-obs_diff
-boot_mean
 
 shifted <- boot_dist %>%
   mutate(shifted = boot_dist - boot_mean)
@@ -599,7 +595,7 @@ tidy(m_main) %>%
   select(term, estimate)
 
 m_int_1980 <- lm(avg ~ year + post1980 + year*post1980, data=annual_avg)
-tidy(m_int_1980)%>%
+tidy(m_int_1980) %>%
   select(term, estimate)
 ```
 
@@ -616,7 +612,7 @@ $$\widehat{TempDiff} = -2.836 + 0.00587 year$$
 **Post-1980:**
 $$\widehat {TempDiff} = -51.0624 + 0.0302 year$$
 
-```{r 1980-lm-viz, echo = FALSE}
+```{r 1980-lm-viz, message = FALSE, echo = FALSE}
 ggplot(data=annual_avg, aes(x=year, y=avg, color=post1980)) +
   geom_point(size = 5, alpha = 0.7) +
   geom_smooth(method="lm", se=FALSE, lwd = 2.5) +
@@ -654,7 +650,7 @@ five_year_slopes <- five_year_slopes %>%
   mutate(yearstart = 1895 + 5 * year)
 ```
 
-``` {r every-five-yrs-viz}
+``` {r every-five-yrs-viz, echo = FALSE}
 ggplot(data=five_year_slopes, aes(x=slopes)) +
   geom_histogram(bins=23, fill = "#A3BE8C", color = "#728562") +
   labs(title=
@@ -667,7 +663,7 @@ ggplot(data=five_year_slopes, aes(x=slopes)) +
   theme(plot.subtitle = element_text(size = 14, hjust = 0))
 ```
 
-```{r 1980-bootstrap-test}
+```{r 1980-bootstrap-test, echo = FALSE}
 boot_dist_slope <- numeric(5000)
 for (i in 1:5000) {
   indices <- sample(1 : nrow(slopes), replace = TRUE)
@@ -706,7 +702,7 @@ After failing to reject the null hypothesis above, we then considered performing
 the same test for the data before and after the year 2000. The linear model as 
 shown below suggests a steeper incline than 1980.
 
-```{r 2000-lm-viz}
+```{r 2000-lm-viz, message = FALSE, echo = FALSE}
 annual_avg <- annual_avg %>%
   mutate(post2000 = year >= 2000)
 
@@ -726,7 +722,7 @@ ggplot(data=annual_avg, aes(x=year, y=avg, color=post2000)) +
   legend_mod()
 ```
 
-``` {r 2000-bootstrap-test}
+``` {r 2000-bootstrap-test, echo = FALSE}
 post2000slope <- 0.0365
 
 ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
@@ -775,7 +771,7 @@ question.
 annual global mean temperatures (positive or negative variability) for years 
 1980-2013 than years 1900-1980?***
 
-```{r net-change}
+```{r net-change, echo = FALSE}
 ggplot(data=differences, aes(x=year, y=abs(differences))) +
   geom_bar(aes(fill=differences), stat="identity") +
   labs(title = 
@@ -804,7 +800,7 @@ The mean net (absolute value) year-to-year fluctuation in global average surface
 temperatures after 1980 is greater than the mean year-to-year fluctuation before
 1980.
 
-```{r net-change-bootstrap}
+```{r net-change-bootstrap, echo = FALSE}
 differences <- differences %>%
   mutate(net_diff = abs(differences))
 
@@ -831,7 +827,7 @@ for (i in 1:5000) {
 net_boot_dist <- tibble(net_boot_dist)
 ```
 
-```{r compare-to-20th-ci}
+```{r compare-to-20th-ci, echo = FALSE}
 diff_bootstrap_interval <- net_boot_dist %>%
   summarize(lower = quantile(net_boot_dist, 0.005),
             upper = quantile(net_boot_dist, 0.995)
@@ -857,7 +853,6 @@ net_boot_mean <- net_boot_dist %>%
   pull()
 
 net_obs_diff <- post1980_net_diff_mean - pre1980_net_diff_mean
-net_obs_diff
 
 shifted_net <- net_boot_dist %>%
   mutate(shifted = net_boot_dist - net_boot_mean)
@@ -866,10 +861,9 @@ shifted_net %>%
   mutate(extreme = if_else(shifted >= net_obs_diff, 1, 0)) %>%
   summarize(p_val = mean(extreme)) %>%
   pull()
-
 ```
 
-```{r net-clt-testing}
+```{r net-clt-testing, echo = FALSE}
 differences <- differences %>%
   mutate(post1980 = year >= 1980)
 
@@ -911,10 +905,7 @@ $H_a: \mu_n > \mu_g$
 The change in mean temperature from before 1950 to post-2010 in North America is 
 greater than the global change.
 
-```{r addcontinent}
-changesbycountry %>%
-  distinct(country)
-  
+```{r addcontinent, echo = FALSE}
 asia <- c("Afghanistan", "Bangladesh", "Burma", "China", "India","Indonesia",
           "Iran","Iraq","Japan","Pakistan","Philippines","Russia",
           "Saudi Arabia","Singapore","South Korea","Syria","Taiwan","Thailand",
@@ -940,7 +931,7 @@ changesbycountry <- changesbycountry %>%
   is_northamerica = continent == "north_america")
 ```
 
-```{r ttest-northamerica}
+```{r ttest-northamerica, echo = FALSE}
 t.test(change ~ is_northamerica,
        data = changesbycountry,
        mu = 0,
@@ -956,7 +947,7 @@ obtaining results in which North America had an average difference of overall te
 change with respect to the average difference for other continents that was as great
 or greater than was observed as shown in this data set, assuming the null hypothesis.
 
-```{r ttest-europe}
+```{r ttest-europe, echo = FALSE}
 t.test(change ~ is_europe,
        data = changesbycountry,
        mu = 0,
@@ -972,7 +963,7 @@ North America: (-2.2975, 1.4352). Additionally, the p-value for Europe's t-test
 was 0.4155, indicating a higher likelihood of Europe having the same true mean 
 change in land temperature as the rest of the world.
 
-```{r df-rworldmap}
+```{r df-rworldmap, message = FALSE, echo = FALSE}
 #For a short introduction type : 	 vignette('rworldmap')
 changesbycountry$country[12] <- "Ivory Coast" #prev. fail match w/ country code
 geo_country_df <- joinCountryData2Map(changesbycountry,
@@ -981,7 +972,7 @@ geo_country_df <- joinCountryData2Map(changesbycountry,
                   #specify verbose = TRUE arg. to get full country list
 ```
 
-```{r viz-rworldmap}
+```{r viz-rworldmap, message = FALSE, echo = FALSE}
 par(mai = c(0, 0, 0.2, 0), xaxs = "i", yaxs = "i")
 customColorGrad <- RColorBrewer::brewer.pal(10, 'YlOrRd')
 #calling mapCountryData with the parameters from RColorBrewer and geo_country_df
@@ -1045,9 +1036,22 @@ have improved over time. Thus, we have more confidence that recent
 observations are generally more accurate than observations preceding the digital 
 revolution.
 
-There were some limitations with our methods. In our difference of means hypothesis tests, while we found that there was not a difference between Europe and America’s respective average change in temperature and the global change in temperature, our tests couldn’t explain the reasons why the differences did not exist. Another limitation of the difference of means test is that while we did not find enough evidence to reject the null hypothesis that there was no difference, it does not mean that a difference does not exist. A final limitation in our methods was that our hypothesis tests could not actually make decisions about what they were testing, they could only be used as aids in decision making.
+There were some limitations with our methods. In our difference of means 
+hypothesis tests, while we found that there was not a difference between Europe 
+and America’s respective average change in temperature and the global change in 
+temperature, our tests could not explain the reasons why the differences did not 
+exist. Another limitation of the difference of means test is that while we did 
+not find enough evidence to reject the null hypothesis that there was no 
+difference, it does not mean that a difference does not exist. A final 
+limitation in our methods was that our hypothesis tests could not actually make 
+decisions about what they were testing, they could only be used as aids in 
+decision making.
 
-If we were able to restart the project, we would have found a dataset that already contained all of the data we wanted to analyze. While we were able to join the two datasets together and perform our analysis, this was tedious compared to just using one dataset. If we used one dataset, we also could have performed more focused analysis on the data.
+If we were able to restart the project, we would have found a data set that 
+already contained all of the data we wanted to analyze. While we were able to 
+join the two data sets together and perform our analysis, this was tedious 
+compared to just using one data set. If we used one data set, we also could have 
+performed more focused analysis on the data.
 
 
 
