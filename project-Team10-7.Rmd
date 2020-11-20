@@ -3,6 +3,7 @@ title: "A Statistical Analysis of Global Temperature Trends"
 subtitle: "Project - Team 10-7: The Outliers"
 author: "By Morgan Pruchniewski, Scott Burstein, Katie Zhou"
 date: "11/22/2020 "
+geometry: margin = 1cm
 output: 
   pdf_document: default
   html_document: default
@@ -46,7 +47,6 @@ to suggest a statistically significant increase in land temperature over the
 last 30 years. 
 
 ## Research Questions
-Our main research question will be: 
 
 ### Is there significant evidence to support the existence of climate change?  
 
@@ -56,21 +56,6 @@ sub-questions.
 *1. Is there evidence to suggest a statistically significant increase in mean
 earth surface temperature from early-20th-century levels to what the data show 
 for more recent years?*. 
-
-For this question, we will use $\alpha = 0.01$.
-
-Our hypotheses for this question are as follows:
-
-$H_o:$
-The mean anomaly of annual temperature averages with respect to the average 
-temperature before 1980 is not greater than 0 (the mean value from before 1980 
-is used as the reference value for calculating anomalies, so the mean anomaly of
-pre-1980 values is assumed to be 0).  
-
-$H_a:$
-The mean anomaly of annual temperature averages with respect to the average 
-temperature before 1980 is greater than 0 (the mean anomaly of data before 1980 
-with respect to its average temperature).
 
 We predict that there will be sufficient evidence to support a statistically 
 significant increase as detailed above, which brings us to the next question:  
@@ -82,19 +67,7 @@ For this question, we will record the observed average rates of change (slope)
 for every five-year period, and test whether the mean slope after 1980 is 
 greater than the mean slope before 1980 by a statistically significant margin. 
 Because there are only 23 five-year segments between 1900 and 2010, we will 
-use a lower $\alpha = 0.01$ level of 0.05.
-
-Our hypotheses for this question are as follows:
-
-$H_o:$
-The rate at which the average global land temperature increased after 
-1980 is not greater than the rate of temperature increase starting from 1900
-based on their respective linear models.
-
-$H_a:$
-The rate at which the average global land temperature increased after 
-1980 is greater than the rate of temperature increase starting from 1900
-based on their respective linear models.  
+use a higher $\alpha$ level of 0.05.
 
 Relating to the previous question, which looks at the rates of presumed 
 increase, we will also evaluate net change (positive of negative).  
@@ -112,28 +85,6 @@ last century in those continents.
 *4. Has North America experienced a greater change in annual average 
 temperatures from the first half of the 20th century to 2010 than other 
 continents? Has Europe?*
-
-Our hypotheses for this two-part question are as follows:
-
-**North America**  
-
-$H_{o}:$
-The change in mean temperature from before 1950 to post-2010 in North 
-America is equal to the change in temperature observed in the rest of the world.  
-$H_{a}:$
-The change in mean temperature from before 1950 to post-2010 in North 
-America is not equal to the change in temperature observed in the rest of the 
-world.  
-
-**Europe**  
-
-$H_{o}:$
-The change in mean temperature from before 1950 to post-2010 in Europe
-is equal to the change in temperature observed in the rest of the world.  
-
-$H_{a}:$
-The change in mean temperature from before 1950 to post-2010 in Europe
-is not equal to the change in temperature observed in the rest of the world.
 
 ## Data Sources:
 
@@ -231,7 +182,7 @@ gradientcolors <- c(
   "#B48EAD","#5E81AC","#A3BE8C","#EBCB8B","#D08770","#BF616A")
 ```
 
-```{r visualization-by-season, message = FALSE, echo = FALSE}
+```{r visualization-by-season, warning = FALSE, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   geom_point(aes(color=season), size=0.8) +
   labs(title = "Global average land temperatures since 1849",
@@ -254,10 +205,10 @@ df <- df %>%
   filter(dt >= "1900-01-01")
 ```
 
-```{r temp-oceans, echo = FALSE}
+```{r temp-oceans, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=df, aes(x=dt, y=LandAndOceanAverageTemperature)) +
   geom_point(aes(color=season), size=0.8) + 
-  labs(title = "Global average land + ocean temperatures since 1900",
+  labs(title = "Global average land + ocean \ntemperatures since 1900",
        x = "Year",
        y = "Average land + ocean temp.",
        color="Season") + 
@@ -271,7 +222,7 @@ increase more steeply after 1975 than the average land temperature. The values
 for spring and autumn in the land/ocean data are also much more similar than 
 they are for just land.
 
-```{r annual-avg-viz, message = FALSE, echo = FALSE}
+```{r annual-avg-viz, message = FALSE, echo = FALSE, fig.height=3.5, fig.align="center"}
 annual_avg <- df %>%
   group_by(year) %>%
   summarize(avg = mean(LandAverageTemperature),
@@ -293,7 +244,7 @@ from each month), we can visualize a more extreme change in average land
 temperature over time than when each month is plotted individually. This is 
 marked by a more severe uptick since 1980.
 
-```{r facet-season, echo = FALSE}
+```{r facet-season, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   geom_point(aes(color=LandAverageTemperature), size=.3) + 
   facet_wrap(~season) +
@@ -307,12 +258,12 @@ ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   theme(legend.position="right")
 ```
 
-```{r highs-lows-visualization, echo = FALSE}
+```{r highs-lows-visualization, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=annual_avg, aes(x = year)) +
-  geom_line(aes(y = max_avg), color="#5E81AC", size=0.3) +
+  geom_line(aes(y = max_avg), color="#BF616A", size=0.3) +
   geom_line(aes(y = min_avg), color="#5E81AC", size=0.3) + 
-  geom_point(aes(y = max_avg), size=0.6, color="#434C5E") +
-  geom_point(aes(y = min_avg), size=0.6, color="#434C5E") +
+  geom_point(aes(y = max_avg), size=0.6, color="#BF616A") +
+  geom_point(aes(y = min_avg), size=0.6, color="#5E81AC") +
   labs(title = "Annual global average highs and lows",
        x = "Year",
        y = "Average global extremes") +
@@ -349,7 +300,7 @@ changesbycountry <- tibble(country=bycountry2010s$Country,
                            long = bycountry2010s$long)
 ```
 
-```{r visualization-by-country, echo = FALSE}
+```{r visualization-by-country, echo = FALSE, fig.height=3.5, fig.align="center"}
 legend_mod <- function() {
   theme(legend.position="right",
         legend.title = element_text(size=10),
@@ -363,7 +314,7 @@ legend_mod <- function() {
 ggplot(data=changesbycountry,aes(x=reorder(country,-change),y=change)) +
   geom_bar(stat="identity", aes(fill=change)) + 
   labs(
-    title="Average change from pre-1950 data to post-2010 data",
+    title="Average change from pre-1950 data \nto post-2010 data",
     subtitle = "by country",
     x="Country",
     y = "Change in average temperature",
@@ -420,7 +371,7 @@ differences <- differences %>%
   mutate(year = 1900 + year)
 ```
 
-```{r per-year-diffs-viz, echo = FALSE}
+```{r per-year-diffs-viz, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=differences, aes(x=year, y=differences)) +
   geom_bar(aes(fill=differences), stat="identity") +
   labs(title = 
@@ -452,7 +403,7 @@ annual_avg <- annual_avg %>%
          post1980 = year >= 1980)
 ```
 
-```{r visualization-anomalies, echo = FALSE}
+```{r visualization-anomalies, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=annual_avg, aes(x=year, y=anomaly)) +
   geom_bar(stat="identity", aes(fill=anomaly)) +
   labs(title=
@@ -528,7 +479,7 @@ shifted %>%
   pull()
 ```
 
-```{r compare-to-20th-sim-viz, echo = FALSE}
+```{r compare-to-20th-sim-viz, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data = shifted, aes(x = shifted)) +
   geom_histogram(color = "#4C566A", fill = "#88C0D0",bins=50) +
   geom_vline(xintercept = obs_diff, color = "#BF616A", lwd=1) +
@@ -612,7 +563,7 @@ $$\widehat{TempDiff} = -2.836 + 0.00587 year$$
 **Post-1980:**
 $$\widehat {TempDiff} = -51.0624 + 0.0302 year$$
 
-```{r 1980-lm-viz, message = FALSE, echo = FALSE}
+```{r 1980-lm-viz, message = FALSE, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=annual_avg, aes(x=year, y=avg, color=post1980)) +
   geom_point(size = 5, alpha = 0.7) +
   geom_smooth(method="lm", se=FALSE, lwd = 2.5) +
@@ -650,7 +601,7 @@ five_year_slopes <- five_year_slopes %>%
   mutate(yearstart = 1895 + 5 * year)
 ```
 
-``` {r every-five-yrs-viz, echo = FALSE}
+``` {r every-five-yrs-viz, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=five_year_slopes, aes(x=slopes)) +
   geom_histogram(bins=23, fill = "#A3BE8C", color = "#728562") +
   labs(title=
@@ -702,7 +653,7 @@ After failing to reject the null hypothesis above, we then considered performing
 the same test for the data before and after the year 2000. The linear model as 
 shown below suggests a steeper incline than 1980.
 
-```{r 2000-lm-viz, message = FALSE, echo = FALSE}
+```{r 2000-lm-viz, message = FALSE, echo = FALSE, fig.height=3.5, fig.align="center"}
 annual_avg <- annual_avg %>%
   mutate(post2000 = year >= 2000)
 
@@ -722,7 +673,7 @@ ggplot(data=annual_avg, aes(x=year, y=avg, color=post2000)) +
   legend_mod()
 ```
 
-``` {r 2000-bootstrap-test, echo = FALSE}
+``` {r 2000-bootstrap-test, echo = FALSE, fig.height=3.5, fig.align="center"}
 post2000slope <- 0.0365
 
 ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
@@ -771,7 +722,7 @@ question.
 annual global mean temperatures (positive or negative variability) for years 
 1980-2013 than years 1900-1980?***
 
-```{r net-change, echo = FALSE}
+```{r net-change, echo = FALSE, fig.height=3.5, fig.align="center"}
 ggplot(data=differences, aes(x=year, y=abs(differences))) +
   geom_bar(aes(fill=differences), stat="identity") +
   labs(title = 
@@ -963,7 +914,7 @@ North America: (-2.2975, 1.4352). Additionally, the p-value for Europe's t-test
 was 0.4155, indicating a higher likelihood of Europe having the same true mean 
 change in land temperature as the rest of the world.
 
-```{r df-rworldmap, message = FALSE, echo = FALSE}
+```{r df-rworldmap, message = FALSE, warning = FALSE, echo = FALSE}
 #For a short introduction type : 	 vignette('rworldmap')
 changesbycountry$country[12] <- "Ivory Coast" #prev. fail match w/ country code
 geo_country_df <- joinCountryData2Map(changesbycountry,
@@ -972,7 +923,7 @@ geo_country_df <- joinCountryData2Map(changesbycountry,
                   #specify verbose = TRUE arg. to get full country list
 ```
 
-```{r viz-rworldmap, message = FALSE, echo = FALSE}
+```{r viz-rworldmap, message = FALSE, warning = FALSE, echo = FALSE, fig.align="center"}
 par(mai = c(0, 0, 0.2, 0), xaxs = "i", yaxs = "i")
 customColorGrad <- RColorBrewer::brewer.pal(10, 'YlOrRd')
 #calling mapCountryData with the parameters from RColorBrewer and geo_country_df
