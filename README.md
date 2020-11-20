@@ -1,4 +1,4 @@
-# Data Codebook
+# README Description of Data Frames and Variables
 
 ## df (GlobalLandTemperaturesByMajorCity joined with GlobalTemperatures)
 `dt`: Year/month/day, starting in 1750 for average land temperature and 1850 for max and min land temperatures and global ocean and land temperatures   
