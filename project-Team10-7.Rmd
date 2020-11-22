@@ -240,7 +240,7 @@ ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
 
 ```
 
-```{r highs-lows-viz, echo = FALSE, fig.height=4, fig.align="center"}
+```{r highs-lows-viz, echo = FALSE, fig.height=3.3, fig.align="center"}
 ggplot(data=annual_avg, aes(x = year)) +
   geom_line(aes(y = max_avg), color="#BF616A", size=0.3) +
   geom_line(aes(y = min_avg), color="#5E81AC", size=0.3) + 
@@ -254,7 +254,7 @@ ggplot(data=annual_avg, aes(x = year)) +
 The upward trend visualized in the first few graphs is consistent over each 
 season, as well as for the annual average temperature highs and lows.
 
-```{r country-avg-changes, echo = FALSE, message=FALSE}
+```{r country-avg-changes, echo = FALSE, message=FALSE, height=3.5}
 bycountrypre1950 <- df %>%
   filter(!is.na(AverageTemperature),
          year < 1950) %>%
@@ -365,10 +365,13 @@ ggplot(data=differences, aes(x=year, y=differences)) +
 Based on this visualization, someone could potentially try to counter the 
 argument for the existence of climate change, because there is a large 
 fluctuation of positive and negative changes from year to year. Therefore, we 
-then created a new data-frame to measure the overall difference between each 
-year's average temperature and the average temperature across the 20th century, 
-as shown below, and are using the comparison to the 20th century average for our 
-hypothesis test.
+then created a new variable recording the overall difference between each 
+year's average temperature and the average temperature from 1900 to 1980, called the
+temperature anomaly. For 1900 to 1980, we can then assume that the mean anomaly 
+is 0, because the 1900-1980 average is what is being used as the reference value.
+Using the temperature anomaly is a useful way to analyze overall trends and abnormalities over an extended
+period of time, rather than fixating on short-term spikes in temperature.
+ 
 
 ```{r create-anomalies-data, echo = FALSE}
 avg_to1980 <- annual_avg %>%
@@ -523,11 +526,11 @@ is exhibited by the post-1980 data based on the linear model.
 
 ```{r time-period-lm, echo = FALSE}
 m_main <- lm(avg ~ year, data=annual_avg)
-tidy(m_main) %>%
+m_main <- tidy(m_main) %>%
   select(term, estimate)
 
 m_int_1980 <- lm(avg ~ year + post1980 + year*post1980, data=annual_avg)
-tidy(m_int_1980) %>%
+m_int_1980 <- tidy(m_int_1980) %>%
   select(term, estimate)
 ```
 
@@ -616,7 +619,7 @@ ggplot(data=shifted_slopes, aes(x=shifted)) +
            x = post1980slope-.002, y = 200, 
            label= 
              paste("Observed post-1980 slope: \n", round(post1980slope, 4)),
-           angle = 90, size = 5) + 
+           angle = 90, size = 3.5) + 
   labs(title=
          "Simulated null distribution of rates of
 temperature increase change after 1980",
@@ -654,7 +657,7 @@ annual_avg <- annual_avg %>%
   mutate(post1940 = year >= 1940)
  
 m_int_1940 <- lm(avg ~ year + post1940 + year*post1940, data=annual_avg)
-tidy(m_int_1940) %>%
+m_int_1940 <- tidy(m_int_1940) %>%
   select(term, estimate)
 
 post1940slope <- 0.014627
