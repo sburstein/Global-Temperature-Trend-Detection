@@ -48,7 +48,7 @@ last 30 years.
 
 ### Is there significant evidence to support the existence of climate change?  
 
-To evaluate this main question, we will conduct comprehensive hypothesis tests on four 
+To comprehensively evaluate this main question, we will conduct hypothesis tests on four 
 sub-questions.
 
 *1. Is there evidence to suggest a statistically significant increase in mean
@@ -61,12 +61,11 @@ significant increase as detailed above, which brings us to the next question:
 *2. Is the earth changing/increasing temperature at a faster rate now than it 
 was in the early 20th century?*
 
-For this question, we will create a dataframe storing the observed average rate 
-of change (slope) for the linear model generated for every five-year period, and 
-test whether the mean value for slope after 1980 is greater than the mean slope 
-before 1980 by a statistically significant margin. 
-Because there are only 23 five-year segments between 1900 and 2010, we will 
-use a higher $\alpha$ level of 0.05.  
+For this question, we will use the average rate of change (slope coefficient) as 
+calculated by the the interaction (before/after 1980 * year) linear model
+as the test statistic, and test whether the mean slope coefficient in simulated distributions for  
+data after 1980 is greater than the mean slope coefficient from before 1980 by a
+statistically significant margin. 
  
 Next, we will then analyze whether the changes in temperature from one year to the next 
 have become more extreme; i.e., if the net (positive or negative) year-to-year 
@@ -101,33 +100,32 @@ focused on analysis on the 1900s.
 ### By Time and Location (for `GlobalLandTemperaturesByMajorCity`)
 
 Each observation in `GlobalLandTemperaturesByMajorCity` is a city and its 
-respective land temperature, coordinates, and Country, which will be used to 
-investigate changes in climate over time. There are 239,177 rows in the major 
-city dataset. 
+respective land temperature, coordinates, and country, which will be used to 
+investigate changes in climate over time. There are 239,177 rows in this dataset. 
 
 ### By Time (for `GlobalTemperatures`)
 
 Each observation in `GlobalTemperatures` is a numeric date/time value 
-(described below) and its respective land temperature, max temperature, 
-min temperature, ocean temperature, and relevant uncertainties to said 
+and its respective land temp., max temp., 
+min temp., ocean temp., and relevant uncertainties to said 
 variables, which will be used to investigate changes in climate over time. 
 There are 3,192 rows in the global dataset. 
 
 ### Relevant Variables:
 
-The relevant variables in the `major_city` dataset include dt (date and time of 
-the recorded temperature, a discrete numeric), AverageTemperature (the average 
-temperature for each city, a continuous numeric), city (nominal categorical), 
+The relevant variables in the `major_city` dataset include dt (date of 
+recorded temperature, discrete numeric), AverageTemperature (average 
+temperature for each city, continuous numeric), city (nominal categorical), 
 country (nominal categorical), latitude (continuous numeric), and longitude 
 (continuous numeric).
 
-The relevant variables in the `global` dataset include dt (date and time of the 
-recorded temperature, a discrete numeric), LandAverageTemperature (the average 
+The relevant variables in the `global` dataset include dt (date of 
+recorded temperature, discrete numeric), LandAverageTemperature (average 
 global land temperature at that time, continuous numeric), LandMaxTemperature 
-(the highest recorded land temperature of that year, a continuous numeric), 
-LandMinTemperature (the lowest recorded land temperature of that year, a 
-continous numeric), and LandAndOceanAverageTemperature (the average of land and 
-ocean temperature averages for that year, a continuous numeric).
+(highest recorded land temperature of that year, continuous numeric), 
+LandMinTemperature (lowest recorded land temperature of that year, 
+continous numeric), and LandAndOceanAverageTemperature (average of land and 
+ocean temperature averages for that year, continuous numeric).
 
 ```{r read-in-data, message = FALSE, echo = FALSE}
 #read in datasets
@@ -182,7 +180,7 @@ gradientcolors <- c(
   "#B48EAD","#5E81AC","#A3BE8C","#EBCB8B","#D08770","#BF616A")
 ```
 
-```{r visualization-by-season,warning=FALSE, echo = FALSE,fig.dim = c(7, 3),fig.align="center"}
+```{r visualization-by-season,warning=FALSE, echo = FALSE,fig.dim = c(7, 4),fig.align="center"}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   geom_point(aes(color=season), size=0.8) +
   labs(title = "Global average land temperatures since 1849",
@@ -205,7 +203,7 @@ df <- df %>%
   filter(dt >= "1900-01-01")
 ```
 
-```{r annual-avg-viz, message = FALSE, echo = FALSE,fig.dim = c(7,3),fig.align="center"}
+```{r annual-avg-viz, message = FALSE, echo = FALSE, fig.align="center"}
 annual_avg <- df %>%
   group_by(year) %>%
   summarize(avg = mean(LandAverageTemperature),
@@ -227,7 +225,7 @@ from each month), we can visualize a more extreme change in average land
 temperature over time than when each month is plotted individually. This is 
 marked by a more severe uptick since 1980.
 
-```{r facet-season, echo = FALSE, fig.dim = c(7,3),fig.align="center"}
+```{r facet-season, echo = FALSE, fig.height=4, fig.align="center"}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   geom_point(aes(color=LandAverageTemperature), size=.3) + 
   facet_wrap(~season) +
@@ -239,9 +237,10 @@ ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   theme_economist_mod() +
   scale_colour_gradientn(colours = gradientcolors) +
   theme(legend.position="right")
+
 ```
 
-```{r highs-lows-viz, echo = FALSE, fig.dim = c(7,3), fig.align="center"}
+```{r highs-lows-viz, echo = FALSE, fig.height=4, fig.align="center"}
 ggplot(data=annual_avg, aes(x = year)) +
   geom_line(aes(y = max_avg), color="#BF616A", size=0.3) +
   geom_line(aes(y = min_avg), color="#5E81AC", size=0.3) + 
@@ -250,12 +249,8 @@ ggplot(data=annual_avg, aes(x = year)) +
   labs(title = "Annual global average highs and lows",
        x = "Year",
        y = "Average global extremes") +
-  theme_economist_mod() +
-  theme(
-    axis.title.y = element_text(margin = unit(c(0, 2, 0, 0), "mm"))
-  )
+  theme_economist_mod() 
 ```
-  
 The upward trend visualized in the first few graphs is consistent over each 
 season, as well as for the annual average temperature highs and lows.
 
@@ -283,7 +278,7 @@ changesbycountry <- tibble(country=bycountry2010s$Country,
                            long = bycountry2010s$long)
 ```
 
-```{r viz-by-country, echo = FALSE, fig.dim = c(8,3),fig.align="center"}
+```{r viz-by-country, echo = FALSE, fig.dim = c(7,4),fig.align="center"}
 legend_mod <- function() {
   theme(legend.position="right",
         legend.title = element_text(size=10),
@@ -428,9 +423,7 @@ boot_dist <- tibble(boot_dist)
 ```{r anomaly-ci, echo = FALSE}
 diff_bootstrap_interval <- boot_dist %>%
   summarize(lower = quantile(boot_dist, 0.005),
-            upper = quantile(boot_dist, 0.995)
-            )
-diff_bootstrap_interval
+            upper = quantile(boot_dist, 0.995))
 ```
 
 Our 99% confidence interval for this hypothesis test is (0.5514, 0.8941).
@@ -456,13 +449,13 @@ boot_mean <- boot_dist %>%
 shifted <- boot_dist %>%
   mutate(shifted = boot_dist - boot_mean)
 
-shifted %>%
+anomaly_pvalue <- shifted %>%
   mutate(extreme = if_else(shifted >= obs_diff, 1, 0)) %>%
   summarize(p_val = mean(extreme)) %>%
   pull()
 ```
 
-```{r compare-to-20th-sim-viz, echo = FALSE, fig.dim = c(7,3),fig.align="center"}
+```{r compare-to-20th-sim-viz, echo = FALSE, fig.height=3.5,fig.align="center"}
 ggplot(data = shifted, aes(x = shifted)) +
   geom_histogram(color = "#4C566A", fill = "#88C0D0",bins=50) +
   geom_vline(xintercept = obs_diff, color = "#BF616A", lwd=1) +
@@ -487,8 +480,9 @@ t.test(anomaly ~ post1980,
   conf.level = 0.99)
 ```
 
-In both approaches used in this analysis, the p-value is well under 
-$\alpha = 0.01$, so we reject this null hypothesis.
+In both the simulation-based and CLT-based approaches used in this analysis, the 
+p-value is well under $\alpha = 0.01$, so we reject this null hypothesis. 
+(Simulation: p-value = 0; CLT: p-value = 3.866e-14)
 
 The p-value in this approach is the probability of obtaining results in which 
 the post-1980 data exhibit an anomaly with respect to the pre-1980 average 
@@ -524,7 +518,7 @@ is greater than the rate of temperature increase starting from 1900
 based on their respective linear models.
 
 
-In this hypothesis test, the test statistic is represented by the slope that 
+In this hypothesis test, the test statistic is represented by the slope coefficient that 
 is exhibited by the post-1980 data based on the linear model.
 
 ```{r time-period-lm, echo = FALSE}
@@ -550,7 +544,7 @@ $$\widehat{TempDiff} = -2.836 + 0.00587 year$$
 **Post-1980:**
 $$\widehat {TempDiff} = -51.0624 + 0.0302 year$$
 
-```{r 1980-lm-viz, message = FALSE, echo = FALSE, fig.dim = c(7,3), fig.align="center"}
+```{r 1980-lm-viz, message = FALSE, echo = FALSE, fig.height=3.5,fig.align="center"}
 ggplot(data=annual_avg, aes(x=year, y=avg, color=post1980)) +
   geom_point(size = 5, alpha = 0.7) +
   geom_smooth(method="lm", se=FALSE, lwd = 2.5) +
@@ -585,6 +579,17 @@ for (i in 1:5000) {
 boot_dist_slopes <- tibble(boot_dist_slopes)
 ```
 
+```{r slopes-ci, echo = FALSE}
+slope_bootstrap_interval <- boot_dist_slopes %>%
+  summarize(lower = quantile(boot_dist_slopes, 0.025),
+            upper = quantile(boot_dist_slopes, 0.975))
+```
+
+Our 95% confidence interval for this hypothesis test is (0.02237, 0.03918).
+We can be 95% confident that the true slope coefficient for post-1980 temperature 
+increases lies within these bounds. 
+
+
 ```{r slopes-testing, echo=FALSE}
 boot_mean_slope <- boot_dist_slopes %>%
   summarize(mean(boot_dist_slopes)) %>%
@@ -596,14 +601,14 @@ post1980slope <- 0.03021129
 shifted_slopes <- boot_dist_slopes %>%
   mutate(shifted = boot_dist_slopes - (boot_mean_slope - pre1980slope))
 
-shifted_slopes %>%
+slope_pvalue <- shifted_slopes %>%
   mutate(extreme = if_else(shifted >= post1980slope, 1, 0)) %>%
   summarize(p_val = mean(extreme)) %>%
   pull()
 
 ```
 
-``` {r slopes-viz, echo = FALSE, fig.dim = c(7,3),fig.align="center"}
+``` {r slopes-viz, echo = FALSE, fig.height=3.5,fig.align="center"}
 ggplot(data=shifted_slopes, aes(x=shifted)) +
   geom_histogram(bins=50, fill = "#A3BE8C", color = "#728562") +
   geom_vline(xintercept = post1980slope, color = "#BF616A", lwd=1) +
@@ -615,15 +620,14 @@ ggplot(data=shifted_slopes, aes(x=shifted)) +
   labs(title=
          "Simulated null distribution of rates of
 temperature increase change after 1980",
-       subtitle="Using slope of linear model for each resampling of data",
+       subtitle="using slope of linear model for each resampling of data",
        x = 
-         "Calculated slope (rate of change in avg. earth surface temperature)",
+"Calculated slope coefficient (rate of change in avg. earth surface temperature)",
        y = "Count") + 
   theme_economist_mod() +
   theme(plot.subtitle = element_text(size = 14, hjust = 0))
 ```
-
-From the above simulation-based test, we attain a p-value of 0. We can then
+From our simulation-based test, we attain a p-value of 0. We can then
 reject the null hypothesis. 
 
 Here, the p-value is the probability of obtaining results in which the
@@ -639,8 +643,8 @@ In context of our original research question, this suggests that the earth
 surface temperature changes that we examined in part 1 may be occurring at a 
 quickening pace over time.
 
-To support this, we also conducted the same hypothesis test with 1940 as a demarcation, 
-with the following hypotheses:
+To support this, we also conducted the same hypothesis test instead using 1940 as a demarcation, 
+with the following hypotheses:  
 $H_o: \beta_{post1940} \leq \beta_{pre1940}$ 
 $H_a: \beta_{post1940} > \beta_{pre1940}$  
 
@@ -695,15 +699,15 @@ boot_mean_slope_40 <- boot_dist_slopes_40 %>%
 shifted_slopes_40 <- boot_dist_slopes_40 %>%
   mutate(shifted = boot_dist_slopes_40 - (boot_mean_slope_40 - pre1940slope))
 
-shifted_slopes_40 %>%
+slopes_1940_pvalue <- shifted_slopes_40 %>%
   mutate(extreme = if_else(shifted >= post1940slope, 1, 0)) %>%
   summarize(p_val = mean(extreme)) %>%
   pull()
-
 ```
 
-For this test, we calculated a p-value of 0.0918, indicating a higher
-probability that the difference of pre-1940 and post-1940 slopes observed in the 
+For this test, we calculate a p-value of 0.0918 and thus fail to reject the null
+hypothesis with $\alpha = 0.05$, indicating a higher probability that the 
+difference of pre-1940 and post-1940 slopes observed in the 
 data could have occurred by chance (i.e., assuming the truth of the null hypothesis).
 This can also be interpreted as the data being more consistent and compatible with the 
 null hypothesis, further supporting the idea that the rate at which the average
@@ -716,7 +720,7 @@ land surface temperature is increasing is accelerating over time.
 annual global mean temperatures (positive or negative variability) for years 
 1980-2013 than years 1900-1980?***
 
-```{r net-change, echo = FALSE,fig.dim = c(7,3),fig.align="center"}
+```{r net-change, echo = FALSE,fig.dim = c(7,3), fig.align="center"}
 ggplot(data=differences, aes(x=year, y=abs(differences))) +
   geom_bar(aes(fill=differences), stat="identity") +
   labs(title = 
@@ -772,12 +776,11 @@ for (i in 1:5000) {
 net_boot_dist <- tibble(net_boot_dist)
 ```
 
-```{r compare-to-20th-ci, echo = FALSE}
+```{r net-diffs-ci, echo = FALSE}
 diff_bootstrap_interval <- net_boot_dist %>%
   summarize(lower = quantile(net_boot_dist, 0.005),
             upper = quantile(net_boot_dist, 0.995)
             )
-diff_bootstrap_interval
 ```
 
 Our 99% confidence interval for this hypothesis test is (-0.00639, 0.14843).
@@ -802,7 +805,7 @@ net_obs_diff <- post1980_net_diff_mean - pre1980_net_diff_mean
 shifted_net <- net_boot_dist %>%
   mutate(shifted = net_boot_dist - net_boot_mean)
 
-shifted_net %>%
+net_pvalue <- shifted_net %>%
   mutate(extreme = if_else(shifted >= net_obs_diff, 1, 0)) %>%
   summarize(p_val = mean(extreme)) %>%
   pull()
@@ -821,7 +824,7 @@ t.test(net_diff ~ post1980,
 ```
 
 The p-values from both the simulation-based and CLT-based hypothesis tests 
-performed here are both less than $\alpha = 0.05$, so we can reject the 
+performed here are 0.0196 and 0.01968 respectively, both less than $\alpha = 0.05$, so we can reject the 
 null hypothesis. In this case, the p-value represents the likelihood of 
 obtaining results where the difference in mean net fluctuation of average temperatures
 from year to year after 1980 versus the mean net fluctuation before 1980 is as great   
@@ -887,7 +890,7 @@ t.test(change ~ is_northamerica,
 
 From this first hypothesis test, we fail to reject the null hypothesis that 
 North America has a different change in mean temperature from 1950-2010 than the
-rest of the world. The p-value was 0.2166, indicating a .2166 probability of 
+rest of the world. The p-value is 0.2166, indicating a .2166 probability of 
 obtaining results in which North America had an average difference of overall temperature
 change with respect to the average difference for other continents that was as great
 or greater than was observed as shown in this data set, assuming the null hypothesis.
@@ -908,7 +911,7 @@ North America: (-2.2975, 1.4352). Additionally, the p-value for Europe's t-test
 was 0.4155, indicating a higher likelihood of Europe having the same true mean 
 change in land temperature as the rest of the world.
 
-```{r df-rworldmap, message = FALSE, warning = FALSE, echo = FALSE}
+```{r df-rworldmap, include = FALSE, echo = FALSE}
 #For a short introduction type : 	 vignette('rworldmap')
 changesbycountry$country[12] <- "Ivory Coast" #prev. fail match w/ country code
 geo_country_df <- joinCountryData2Map(changesbycountry,
@@ -917,8 +920,9 @@ geo_country_df <- joinCountryData2Map(changesbycountry,
                   #specify verbose = TRUE arg. to get full country list
 ```
 
-```{r viz-rworldmap, message = FALSE, warning = FALSE, echo = FALSE, fig.align="center"}
-par(mai = c(0, 0, 0.2, 0), xaxs = "i", yaxs = "i")
+```{r viz-rworldmap, message = FALSE, warning = FALSE, echo = FALSE, fig.height=3.8,fig.align="center"}
+par(mai = c(0, 0, 0.3, 0), xaxs = "i", yaxs = "i")
+
 customColorGrad <- RColorBrewer::brewer.pal(10, 'YlOrRd')
 #calling mapCountryData with the parameters from RColorBrewer and geo_country_df
 mapCountryData(geo_country_df, nameColumnToPlot="change",
