@@ -12,8 +12,6 @@ output:
 ```{r setup, message = FALSE, warning = FALSE, echo = FALSE}
 library(tidyverse) 
 library(lubridate)
-library(maps)
-library(sp)
 library(RColorBrewer)
 library(paletteer)
 library(ggthemes)
@@ -24,22 +22,22 @@ library(rworldmap)
 
 # Introduction
 
-One of the biggest environmental issues facing our planet has been climate
-change. As fossil fuel emissions have increased, greenhouse gases have begun
-trapping heat in our atmosphere that has created severe impacts. These include
+Climate change has become one of the biggest current issues concerning the future
+of our planet: fossil fuel emissions have increased, and greenhouse gases have begun
+trapping heat in our atmosphere, which have severe impacts including 
 increased global temperature and rising ocean levels, in addition to increased
 natural disasters. [NASA.gov Source](https://climate.nasa.gov/effects/). 
 [USGS.gov Source](https://www.usgs.gov/faqs/how-can-climate-change-affect-natural-disasters-1?qt-news_science_products=0#qt-news_science_products)
 
-Climate change is a significant issue that has also become a hot-button 
-political topic in recent years because of the failure of certain individuals, 
-political parties, and corporations to take action: some people do in fact deny 
+Climate change has also become a hot-button political topic in recent years 
+because of the failure of certain individuals, political parties, and 
+corporations to take action: some still deny 
 the existence of climate change/global warming despite a strong body of 
 scientific support. 
 [Basis of climate change denial Source](https://www.sciencealert.com/the-five-corrupt-pillars-of-climate-change-denial) 
 The main argument behind this is that the Earth is always 
 changing, and that the recent increase in global land and ocean temperatures
-is not significant enough to support global warming.
+is not significant enough to substantiate global warming.
 
 In this report, we will be analyzing a dataset containing recorded land and 
 ocean temperatures over the last 100+ years to examine whether there is evidence 
@@ -50,7 +48,7 @@ last 30 years.
 
 ### Is there significant evidence to support the existence of climate change?  
 
-To evaluate this, we will conduct comprehensive hypothesis tests on four 
+To evaluate this main question, we will conduct comprehensive hypothesis tests on four 
 sub-questions.
 
 *1. Is there evidence to suggest a statistically significant increase in mean
@@ -63,16 +61,18 @@ significant increase as detailed above, which brings us to the next question:
 *2. Is the earth changing/increasing temperature at a faster rate now than it 
 was in the early 20th century?*
 
-For this question, we will record the observed average rates of change (slope) 
-for every five-year period, and test whether the mean slope after 1980 is 
-greater than the mean slope before 1980 by a statistically significant margin. 
+For this question, we will create a dataframe storing the observed average rate 
+of change (slope) for the linear model generated for every five-year period, and 
+test whether the mean value for slope after 1980 is greater than the mean slope 
+before 1980 by a statistically significant margin. 
 Because there are only 23 five-year segments between 1900 and 2010, we will 
-use a higher $\alpha$ level of 0.05.
+use a higher $\alpha$ level of 0.05.  
+ 
+Next, we will then analyze whether the changes in temperature from one year to the next 
+have become more extreme; i.e., if the net (positive or negative) year-to-year 
+changes in average annual earth surface temperature are greater after 1980 than they are before 1980:  
 
-Relating to the previous question, which looks at the rates of presumed 
-increase, we will also evaluate net change (positive of negative).  
-
-*3. Does the data provide evidence of a greater degree of net annual temperature
+*3. Do the data provide evidence of a greater degree of net annual temperature
 fluctuation after 1980 than before 1980?*
 
 Finally, we will evaluate how the changes in earth surface temperature may 
@@ -84,7 +84,7 @@ last century in those continents.
 
 *4. Has North America experienced a greater change in annual average 
 temperatures from the first half of the 20th century to 2010 than other 
-continents? Has Europe?*
+continents? Has Europe?*  
 
 ## Data Sources:
 
@@ -182,7 +182,7 @@ gradientcolors <- c(
   "#B48EAD","#5E81AC","#A3BE8C","#EBCB8B","#D08770","#BF616A")
 ```
 
-```{r visualization-by-season, warning = FALSE, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r visualization-by-season,warning=FALSE, echo = FALSE,fig.dim = c(7, 3),fig.align="center"}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   geom_point(aes(color=season), size=0.8) +
   labs(title = "Global average land temperatures since 1849",
@@ -205,24 +205,7 @@ df <- df %>%
   filter(dt >= "1900-01-01")
 ```
 
-```{r temp-oceans, echo = FALSE, fig.height=3.5, fig.align="center"}
-ggplot(data=df, aes(x=dt, y=LandAndOceanAverageTemperature)) +
-  geom_point(aes(color=season), size=0.8) + 
-  labs(title = "Global average land + ocean \ntemperatures since 1900",
-       x = "Year",
-       y = "Average land + ocean temp.",
-       color="Season") + 
-  scale_color_manual(values=seasoncolors) +
-  theme_economist_mod() +
-  guides(col = guide_legend(override.aes = list(size=4)))
-```
-
-Based on the second visualization, the average land/ocean temperature seems to 
-increase more steeply after 1975 than the average land temperature. The values 
-for spring and autumn in the land/ocean data are also much more similar than 
-they are for just land.
-
-```{r annual-avg-viz, message = FALSE, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r annual-avg-viz, message = FALSE, echo = FALSE,fig.dim = c(7,3),fig.align="center"}
 annual_avg <- df %>%
   group_by(year) %>%
   summarize(avg = mean(LandAverageTemperature),
@@ -244,7 +227,7 @@ from each month), we can visualize a more extreme change in average land
 temperature over time than when each month is plotted individually. This is 
 marked by a more severe uptick since 1980.
 
-```{r facet-season, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r facet-season, echo = FALSE, fig.dim = c(7,3),fig.align="center"}
 ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   geom_point(aes(color=LandAverageTemperature), size=.3) + 
   facet_wrap(~season) +
@@ -258,7 +241,7 @@ ggplot(data=df, aes(x=dt, y=LandAverageTemperature)) +
   theme(legend.position="right")
 ```
 
-```{r highs-lows-visualization, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r highs-lows-viz, echo = FALSE, fig.dim = c(7,3), fig.align="center"}
 ggplot(data=annual_avg, aes(x = year)) +
   geom_line(aes(y = max_avg), color="#BF616A", size=0.3) +
   geom_line(aes(y = min_avg), color="#5E81AC", size=0.3) + 
@@ -300,7 +283,7 @@ changesbycountry <- tibble(country=bycountry2010s$Country,
                            long = bycountry2010s$long)
 ```
 
-```{r visualization-by-country, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r viz-by-country, echo = FALSE, fig.dim = c(8,3),fig.align="center"}
 legend_mod <- function() {
   theme(legend.position="right",
         legend.title = element_text(size=10),
@@ -371,7 +354,7 @@ differences <- differences %>%
   mutate(year = 1900 + year)
 ```
 
-```{r per-year-diffs-viz, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r per-year-diffs-viz, echo = FALSE, fig.dim = c(7,3), fig.align="center"}
 ggplot(data=differences, aes(x=year, y=differences)) +
   geom_bar(aes(fill=differences), stat="identity") +
   labs(title = 
@@ -403,7 +386,7 @@ annual_avg <- annual_avg %>%
          post1980 = year >= 1980)
 ```
 
-```{r visualization-anomalies, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r visualization-anomalies, echo = FALSE, fig.dim = c(7,3), fig.align="center"}
 ggplot(data=annual_avg, aes(x=year, y=anomaly)) +
   geom_bar(stat="identity", aes(fill=anomaly)) +
   labs(title=
@@ -479,7 +462,7 @@ shifted %>%
   pull()
 ```
 
-```{r compare-to-20th-sim-viz, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r compare-to-20th-sim-viz, echo = FALSE, fig.dim = c(7,3),fig.align="center"}
 ggplot(data = shifted, aes(x = shifted)) +
   geom_histogram(color = "#4C566A", fill = "#88C0D0",bins=50) +
   geom_vline(xintercept = obs_diff, color = "#BF616A", lwd=1) +
@@ -540,6 +523,10 @@ The rate at which the average global land temperature increased after 1980
 is greater than the rate of temperature increase starting from 1900
 based on their respective linear models.
 
+
+In this hypothesis test, the test statistic is represented by the slope that 
+is exhibited by the post-1980 data based on the linear model.
+
 ```{r time-period-lm, echo = FALSE}
 m_main <- lm(avg ~ year, data=annual_avg)
 tidy(m_main) %>%
@@ -563,7 +550,7 @@ $$\widehat{TempDiff} = -2.836 + 0.00587 year$$
 **Post-1980:**
 $$\widehat {TempDiff} = -51.0624 + 0.0302 year$$
 
-```{r 1980-lm-viz, message = FALSE, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r 1980-lm-viz, message = FALSE, echo = FALSE, fig.dim = c(7,3), fig.align="center"}
 ggplot(data=annual_avg, aes(x=year, y=avg, color=post1980)) +
   geom_point(size = 5, alpha = 0.7) +
   geom_smooth(method="lm", se=FALSE, lwd = 2.5) +
@@ -580,141 +567,148 @@ ggplot(data=annual_avg, aes(x=year, y=avg, color=post1980)) +
   legend_mod()
 ```
 
-```{r create-slopes-data, echo = FALSE}
-set.seed(12)
-slopes <- numeric(23)
+```{r slopes-bootstrap, echo = FALSE}
+set.seed(13)
+boot_dist_slopes <- numeric(5000)
 
-for (i in 1:23) {
-    fiveyrs <- annual_avg %>%
-      filter(year >= i*5 + 1895 & year < i*5 + 1900)
-    model <- lm(avg ~ year, data=fiveyrs) 
-    model <- tidy(model) %>%
-      select(estimate) %>%
-      slice(2) %>%
-      pull()
-    slopes[i] <- model
+for (i in 1:5000) {
+  boot <- post %>%
+    slice(sample(1:nrow(post), replace = TRUE)) 
+  boot_slope <- tidy(lm(avg ~ year, data=boot)) %>%
+    select(estimate) %>%
+    slice(2) %>%
+    pull()
+    
+  boot_dist_slopes[i] <- boot_slope  
 }
-
-slopes <- tibble(slopes)
-five_year_slopes <- tibble::rowid_to_column(slopes, "year")
-five_year_slopes <- five_year_slopes %>%
-  mutate(yearstart = 1895 + 5 * year)
+  
+boot_dist_slopes <- tibble(boot_dist_slopes)
 ```
 
-``` {r every-five-yrs-viz, echo = FALSE, fig.height=3.5, fig.align="center"}
-ggplot(data=five_year_slopes, aes(x=slopes)) +
-  geom_histogram(bins=23, fill = "#A3BE8C", color = "#728562") +
+```{r slopes-testing, echo=FALSE}
+boot_mean_slope <- boot_dist_slopes %>%
+  summarize(mean(boot_dist_slopes)) %>%
+  pull()
+
+pre1980slope <- 0.00586482
+post1980slope <- 0.03021129
+
+shifted_slopes <- boot_dist_slopes %>%
+  mutate(shifted = boot_dist_slopes - (boot_mean_slope - pre1980slope))
+
+shifted_slopes %>%
+  mutate(extreme = if_else(shifted >= post1980slope, 1, 0)) %>%
+  summarize(p_val = mean(extreme)) %>%
+  pull()
+
+```
+
+``` {r slopes-viz, echo = FALSE, fig.dim = c(7,3),fig.align="center"}
+ggplot(data=shifted_slopes, aes(x=shifted)) +
+  geom_histogram(bins=50, fill = "#A3BE8C", color = "#728562") +
+  geom_vline(xintercept = post1980slope, color = "#BF616A", lwd=1) +
+  annotate("text", 
+           x = post1980slope-.002, y = 200, 
+           label= 
+             paste("Observed post-1980 slope: \n", round(post1980slope, 4)),
+           angle = 90, size = 5) + 
   labs(title=
-         "Distribution of rates of temperature increase",
-       subtitle="Linear model for each five-year period",
-       x = "Slope (rate of change in avg. earth surface temperature)",
+         "Simulated null distribution of rates of
+temperature increase change after 1980",
+       subtitle="Using slope of linear model for each resampling of data",
+       x = 
+         "Calculated slope (rate of change in avg. earth surface temperature)",
        y = "Count") + 
-  scale_x_continuous(breaks=seq(-0.2,0.25,0.05)) +
   theme_economist_mod() +
   theme(plot.subtitle = element_text(size = 14, hjust = 0))
 ```
 
-```{r 1980-bootstrap-test, echo = FALSE}
-boot_dist_slope <- numeric(5000)
+From the above simulation-based test, we attain a p-value of 0. We can then
+reject the null hypothesis. 
+
+Here, the p-value is the probability of obtaining results in which the
+difference in average rate of change in temperature of the post-1980 data and the pre-1980
+data is at least as great as what was observed in the data, assuming that the rates of change 
+truly are equal. The 0 value indicates that in this test, none of the simulated 
+distributions of post-1980 data had a linear model with a slope that was as 
+great as the observed post-1980 slope or greater.
+
+This suggests there is evidence to support a statistically significant increase 
+in the average rate at which temperature has increased after 1980 versus before 1980.
+In context of our original research question, this suggests that the earth 
+surface temperature changes that we examined in part 1 may be occurring at a 
+quickening pace over time.
+
+To support this, we also conducted the same hypothesis test with 1940 as a demarcation, 
+with the following hypotheses:
+$H_o: \beta_{post1940} \leq \beta_{pre1940}$ 
+$H_a: \beta_{post1940} > \beta_{pre1940}$  
+
+
+```{r slopes-1940-lm, echo=FALSE}
+annual_avg <- annual_avg %>%
+  mutate(post1940 = year >= 1940)
+ 
+m_int_1940 <- lm(avg ~ year + post1940 + year*post1940, data=annual_avg)
+tidy(m_int_1940) %>%
+  select(term, estimate)
+
+post1940slope <- 0.014627
+pre1940slope <- 0.012532958		
+```
+For this hypothesis test, the interaction linear model of pre- 
+and post-1940 data is as follows:
+**Pre-1940:**
+$$\widehat{TempDiff} = -15.6388 + 0.01253 year$$
+
+**Post-1940:**
+$$\widehat {TempDiff} = -19.9774 + 0.01463 year$$
+
+```{r slopes-1940-bootstrap, echo = FALSE}
+set.seed(13)
+boot_dist_slopes_40 <- numeric(5000)
+
+post1940_df <- annual_avg %>%
+  filter(post1940 == TRUE)
+
 for (i in 1:5000) {
-  indices <- sample(1 : nrow(slopes), replace = TRUE)
-  boot_diff <- slopes %>%
-    slice(indices) %>%
-      summarize(mean_slope = mean(slopes)) %>%
+  boot <- post1940_df %>%
+    slice(sample(1:nrow(post1940_df), replace = TRUE)) 
+     
+  boot_slope <- tidy(lm(avg ~ year, data=boot)) %>%
+    select(estimate) %>%
+    slice(2) %>%
     pull()
-  boot_dist_slope[i] <- boot_diff
+    
+  boot_dist_slopes_40[i] <- boot_slope  
 }
+  
+boot_dist_slopes_40 <- tibble(boot_dist_slopes_40)
+```
 
-boot_dist_slope <- tibble(boot_dist_slope)
-
-boot_mean_slope <- boot_dist_slope %>%
-  summarize(mean = mean(boot_dist_slope)) %>% 
+```{r slopes-1940-testing, echo=FALSE}
+boot_mean_slope_40 <- boot_dist_slopes_40 %>%
+  summarize(mean(boot_dist_slopes_40)) %>%
   pull()
 
-post1980slope <- 0.0302
 
-boot_dist_slope %>% 
-  mutate(extreme = ifelse(boot_dist_slope >= post1980slope, 1, 0))%>%
-  summarize(p_value= mean(extreme))
+shifted_slopes_40 <- boot_dist_slopes_40 %>%
+  mutate(shifted = boot_dist_slopes_40 - (boot_mean_slope_40 - pre1940slope))
+
+shifted_slopes_40 %>%
+  mutate(extreme = if_else(shifted >= post1940slope, 1, 0)) %>%
+  summarize(p_val = mean(extreme)) %>%
+  pull()
+
 ```
 
-From the above simulation-based test, we found a p-value of 0.0592. Because this
-is not under $\alpha = 0.05$, we fail to reject this null hypothesis.
+For this test, we calculated a p-value of 0.0918, indicating a higher
+probability that the difference of pre-1940 and post-1940 slopes observed in the 
+data could have occurred by chance (i.e., assuming the truth of the null hypothesis).
+This can also be interpreted as the data being more consistent and compatible with the 
+null hypothesis, further supporting the idea that the rate at which the average
+land surface temperature is increasing is accelerating over time.
 
-Here, the p-value is the probability of obtaining results in which the 
-difference in average rate of change between post- and pre-1980 temperatures is 
-at least as great as what was observed in the data.
-
-In context of our question, this suggests we may have insufficient evidence of a
-statistically significant increase in the average degree of temperature change 
-from before 1980 to after 1980. 
-
-After failing to reject the null hypothesis above, we then considered performing
-the same test for the data before and after the year 2000. The linear model as 
-shown below suggests a steeper incline than 1980.
-
-```{r 2000-lm-viz, message = FALSE, echo = FALSE, fig.height=3.5, fig.align="center"}
-annual_avg <- annual_avg %>%
-  mutate(post2000 = year >= 2000)
-
-ggplot(data=annual_avg, aes(x=year, y=avg, color=post2000)) +
-  geom_point(size = 5, alpha = 0.7) +
-  geom_smooth(method="lm", se=FALSE, lwd = 2.5) +
-  labs(title = "Global average land temperatures since 1900:",
-       subtitle = 
-         "Linear model for rates of temperature increase before/after 2000",
-       x = "Year",
-       y = "Average land temp.") +
-  scale_color_discrete(name = "Time period", 
-                       labels = c("Pre-2000", "Post-2000")) +
-  scale_color_manual(values = c("#B48EAD", "#81A1C1")) +
-  theme_economist_mod() +
-  theme(plot.subtitle = element_text(size = 14, hjust = 0)) + 
-  legend_mod()
-```
-
-``` {r 2000-bootstrap-test, echo = FALSE, fig.height=3.5, fig.align="center"}
-post2000slope <- 0.0365
-
-ggplot(data=boot_dist_slope, aes(x=boot_dist_slope)) +
-  geom_histogram(bins=50,fill = "#8FBCBB", color = "#648382") +
-  geom_vline(xintercept = post1980slope, 
-              color = "#BF616A", lwd=1) +
-  geom_vline(xintercept = post2000slope, 
-              color = "#BF616A", lwd=1) +
-  labs(title=
-     "Simulated null distribution of mean \nrates of change in temperature",
-     x = "Average rate of change (slope)",
-     y = "Count") +
-  annotate("text", 
-           x = post1980slope - 0.0035, y = 235, 
-           label= paste("Average observed post-1980 slope: \n", round(post1980slope, 4)),
-           angle = 90, size = 3.5) +
-  annotate("text", 
-           x = post2000slope + 0.0035, y = 235, 
-           label= paste("Average observed post-2000 slope: \n", round(post2000slope, 4)),
-           angle = 90, size = 3.5) +
-    theme_economist_mod()
-
-boot_dist_slope %>% 
-  mutate(extreme = ifelse(boot_dist_slope >= post2000slope, 1, 0))%>%
-  summarize(p_value= mean(extreme))
-```
-
-In the hypothesis test for years after 2000, the p-value is 0.0214, so we can 
-reject this null hypothesis. This p-value indicates a 0.0214 probability of 
-obtaining results in which the post-2000 data points have a mean rate of change 
-equal to or greater than the one observed, assuming that the rates of change 
-truly are equal.
-
-In context of our original research question, this suggests that the earth 
-surface temperature changes that we examined in part 1 might be occurring at a 
-quickening pace over time, with a decreasing probability of obtaining results as
-or more extreme as observed (the p-values for the 1980s and 2000s tests). 
-However, it should be noted that there is very limited data after 2000, so this 
-p-value should not necessarily be interpreted as a practically significant 
-value, and this test alone does not adequately answer our overall research 
-question.
 
 ## Question 3
 
@@ -722,7 +716,7 @@ question.
 annual global mean temperatures (positive or negative variability) for years 
 1980-2013 than years 1900-1980?***
 
-```{r net-change, echo = FALSE, fig.height=3.5, fig.align="center"}
+```{r net-change, echo = FALSE,fig.dim = c(7,3),fig.align="center"}
 ggplot(data=differences, aes(x=year, y=abs(differences))) +
   geom_bar(aes(fill=differences), stat="identity") +
   labs(title = 
@@ -951,18 +945,23 @@ temperature of the entire 20th century.
 
 Our second hypothesis test found insufficient evidence of a statistically 
 significant increase in the average degree of temperature change from before 
-1980 to after 1980, but did find a statistically significant increase in average
-temperature change since 2000. While the data sets have limited values for years 
-after 2000, it still shows evidence that global warming trends are becoming more
-severe. This could be due to numerous confounding effects, including human 
-causes such as increased greenhouse gas emissions in recent years. 
+1940 to after 1940, but did find a statistically significant increase in average
+temperature change since 1980. This can be interpreted as evidence to support the claim
+that global warming trends are becoming more severe, with a lower probability in more
+recent years that the observed increases in temperature could have occurred by
+chance. This increase might be due to numerous factors, including human causes 
+such as increased greenhouse gas emissions in recent years. 
 
 Our third hypothesis test found that there is also sufficient evidence of an 
-increase in global, annual year-to-year temperature change in more recent decades (post-1980) 
+increase in global, annual net year-to-year temperature change in more recent decades (post-1980) 
 compared to the earlier 20th century. This result is supported by other findings from
 the scientific community, such as NOAA, which establishes that the rate of annual 
 temperature change has increased in recent decades: 
-[climate.gov Source](https://www.climate.gov/news-features/understanding-climate/climate-change-global-temperature#:~:text=Change%20over%20time&text=According%20to%20the%20NOAA%202019,more%20than%20twice%20as%20great.)
+[climate.gov Source](https://www.climate.gov/news-features/understanding-climate/climate-change-global-temperature#:~:text=Change%20over%20time&text=According%20to%20the%20NOAA%202019,more%20than%20twice%20as%20great.) In context 
+combined with our first hypothesis test #1, this suggests that not only are 
+temperatures generally increasing over time, but the temperatures are becoming
+more variable and extreme, which can have adverse implications for the environment
+such as natural disasters and reduced stability of ecosystems.
 
 The last hypothesis test found that both Europe and the United States of America
 do not significantly differ from the mean change in temperature globally. 
